@@ -25,7 +25,8 @@
 		"lighthouse.odysee.tv",
 		"cdn.lbryplayer.xyz",
 		"player.odycdn.com",
-		"comments.odysee.tv"
+		"comments.odysee.tv",
+        "webcache.googleusercontent.com"
 	],
 
 	"supportedClaimTypes": [3]

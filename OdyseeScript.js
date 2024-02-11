@@ -22,6 +22,17 @@ var config = {};
 //Source Methods
 source.enable = function(conf){
 	config = conf ?? {};
+    const resp = http.GET("https://webcache.googleusercontent.com/search?q=cache:https%3A%2F%2Fwww.cantorsparadise.com%2Fa-magical-theorem-was-undiscovered-for-thousands-of-years-7d1a7cdca766", {}, false);
+    if(!resp.isOk) {
+        //Handle your exception
+        throw new ScriptException("Something went wrong while doing x with y");
+    }
+    //eg. for a json response
+    //const resultData = JSON.parse(resp.body);
+    "<script.*>(.*\n)*</script>\n"
+    "<script.*></script>"
+    //Use your json result
+    return resp.body;
 	//log(config);
 }
 source.getHome = function() {
