@@ -19,14 +19,7 @@
 	
 	"allowEval": false,
 	"allowUrls": [
-		"api.na-backend.odysee.com",
-		"odysee.com",
-		"api.odysee.com",
-		"lighthouse.odysee.tv",
-		"cdn.lbryplayer.xyz",
-		"player.odycdn.com",
-		"comments.odysee.tv",
-        "webcache.googleusercontent.com"
+        "everywhere"
 	],
 
 	"supportedClaimTypes": [3]
