@@ -7,7 +7,7 @@
 	"platformUrl": "https://odysee.com",
 	"sourceUrl": "https://plugins.grayjay.app/Odysee/OdyseeConfig.json",
 	"repositoryUrl": "https://futo.org",
-	"scriptUrl": "./OdyseeScript.js",
+	"scriptUrl": "./YTMusicScript.js",
 	"version": 35,
 	
 	"iconUrl": "./odysee.png",
