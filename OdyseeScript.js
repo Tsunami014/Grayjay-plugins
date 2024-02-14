@@ -37,13 +37,26 @@ function getSample() {
     //const resultData = JSON.parse(resp.body);
     "<script.*>(.*\n)*</script>\n" // Remove ALL script tags, untested, the below works fine anyways
     "<script.*></script>" // Remove script tags if you're loading the HTML
-    //Use your json result
+    //Use your json result   
+    return new PlatformPostDetails({ //TODO: fix all this
+        id: new PlatformID('hi', 'bye', 'cyasoon'),
+        name: 'HELLO',
+        author: getPlatformAuthorLink({relationships: {campaign: {data: {id: '123'}}}}, {name: 'hi', url: 'hi.com', thumbnail: 'https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg', subscribers: 123}),
+        datetime: (Date.parse('12/02/2024 6:03 PM') / 1000),
+        url: 'test.com',
+        description: "Description of Post",
+        images: ['https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg'],
+        thumbnails: [],
+        rating: new RatingLikes(123),
+        textType: Type.Text.Html,
+        content: "<h2>TITLE</h2><p>Some text</p><p>image:</p><img src='https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg'></img><a href='https://www.hi.com>LINK TEST</a>"//resp.body
+    });    
     return new PlatformPost({
         id: new PlatformID('hi', 'bye', 'cyasoon'),
         name: 'HELLO',
         author: getPlatformAuthorLink({relationships: {campaign: {data: {id: '123'}}}}, {name: 'hi', url: 'hi.com', thumbnail: 'hi.com', subscribers: 123}),
-        datetime: (Date.parse('12/02/2024') / 1000),
-        url: 'hi.com',
+        datetime: (Date.parse('12/02/2024 6:03 PM') / 1000),
+        url: 'webcache.googleusercontent.com',
         description: "Description of Post",
         images: [],
         thumbnails: [],
@@ -62,9 +75,6 @@ function getSample() {
     //             new Thumbnail("https://.../...", 1080),
     //         ])
     // });
-    
-    
-    return resp.body;
 }
 
 //source.getHome = function(continuationToken) {
