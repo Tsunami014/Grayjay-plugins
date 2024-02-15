@@ -16,7 +16,9 @@ source.getHome = function() {
     //     page_size: 20,
     //     limit_claims_per_channel: 1
 	// };
-	return new ContentPager([getSample()], false);
+	return new ContentPager([
+        getSample()
+    ]);
 };
 
 function getPlatformAuthorLink(item, context) {
@@ -38,29 +40,23 @@ function getSample() {
     "<script.*>(.*\n)*</script>\n" // Remove ALL script tags, untested, the below works fine anyways
     "<script.*></script>" // Remove script tags if you're loading the HTML
     //Use your json result   
-    return new PlatformPostDetails({ //TODO: fix all this
+    return new PlatformPostDetails({
         id: new PlatformID('hi', 'bye', 'cyasoon'),
         name: 'HELLO',
-        author: getPlatformAuthorLink({relationships: {campaign: {data: {id: '123'}}}}, {name: 'hi', url: 'hi.com', thumbnail: 'https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg', subscribers: 123}),
-        datetime: (Date.parse('12/02/2024 6:03 PM') / 1000),
+        author: new PlatformAuthorLink(new PlatformID(config.platform, "SomeID"), "Some name", "", 'https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg'),
+        datetime: parseInt(Date.parse('2024-01-02') / 1000),
         url: 'test.com',
         description: "Description of Post",
         images: ['https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg'],
-        thumbnails: [],
+        thumbnails: [
+            new Thumbnails([
+                new Thumbnail('https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg', 1)
+            ])
+        ],
         rating: new RatingLikes(123),
         textType: Type.Text.Html,
-        content: "<h2>TITLE</h2><p>Some text</p><p>image:</p><img src='https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg'></img><a href='https://www.hi.com>LINK TEST</a>"//resp.body
-    });    
-    return new PlatformPost({
-        id: new PlatformID('hi', 'bye', 'cyasoon'),
-        name: 'HELLO',
-        author: getPlatformAuthorLink({relationships: {campaign: {data: {id: '123'}}}}, {name: 'hi', url: 'hi.com', thumbnail: 'hi.com', subscribers: 123}),
-        datetime: (Date.parse('12/02/2024 6:03 PM') / 1000),
-        url: 'webcache.googleusercontent.com',
-        description: "Description of Post",
-        images: [],
-        thumbnails: [],
-    });
+        content: "<h2>TITLE</h2><p>Some text</p><p>image:</p><img src='https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg'></img><br><a href='https://www.hi.com>LINK TEST</a><h3>HI</h3>"
+    })
 
     // new PlatformPost({
     //     id: new PlatformID(config.name, item?.id, config.id),
