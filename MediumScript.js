@@ -47,15 +47,16 @@ function getSample() {
         datetime: parseInt(Date.parse('2024-01-02') / 1000),
         url: 'test.com',
         description: "Description of Post",
-        images: ['https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg'],
+        images: ['https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg', 'https://miro.medium.com/v2/resize:fit:1400/1*M7_GzV-glZaZLNuSiNdiPQ.png'],
         thumbnails: [
             new Thumbnails([
-                new Thumbnail('https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg', 1)
+                new Thumbnail('https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg', 1),
+                new Thumbnail('https://miro.medium.com/v2/resize:fit:1400/1*M7_GzV-glZaZLNuSiNdiPQ.png', 1)
             ])
         ],
         rating: new RatingLikes(123),
         textType: Type.Text.Html,
-        content: "<h2>TITLE</h2><p>Some text</p><p>image:</p><img src='https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg'></img><br><a href='https://www.hi.com>LINK TEST</a><h3>HI</h3>"
+        content: "<p>image:</p><br><img src='https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_640.jpg'></img><img src'https://miro.medium.com/v2/resize:fit:1400/1*M7_GzV-glZaZLNuSiNdiPQ.png'></img><h1>I REALLY SAID HI</h1>"
     })
 
     // new PlatformPost({
