@@ -19,7 +19,9 @@
 	
 	"allowEval": false,
 	"allowUrls": [
-        "everywhere"
+        "music.youtube.com",
+        "youtube.com",
+        "www.youtube.com"
 	],
 
 	"supportedClaimTypes": [3]
