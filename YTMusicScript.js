@@ -1,3 +1,5 @@
+const REGEX_DETAILS_URL = /https?:\/\/music\.youtube\.com\/watch\?v=[a-zA-Z0-9_-]{11}/
+
 const USER_AGENT_TABLET = "Mozilla/5.0 (iPad; CPU OS 13_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/87.0.4280.77 Mobile/15E148 Safari/604.1";
 
 const YTM_DOMAIN = "https://music.youtube.com"
@@ -64,7 +66,7 @@ function executeRequest(url, headers = {}, data = null) {
         throw new Error("Invalid URL");
     }
     const resp = http.POST(url, data, baseHeaders, false);
-    return JSON.parse(resp.body);;
+    return JSON.parse(resp.body);
 }
 
 function player(video_id) {
@@ -144,16 +146,14 @@ function get_video(video_id) {
 function get_video_details(video_id) {
     let data = send_request("player", {"video_id": video_id}).videoDetails;
 
-    const streams = applyDescrambler(player(video_id)['streamingData']);
+    const streams = applyDescrambler(player(video_id).streamingData);
 
     let Sources = streams.map(function(s) {
-        let end = s.mimeType.indexOf(';');
-        let container = s.mimeType.slice(0, end);
         return new VideoUrlSource({
             width: s.width,
             height: s.height,
-            container: container,
-            codec: result,
+            container: s.mimeType,
+            codec: s.video_codec,
             name: s.qualityLabel,
             bitrate: s.bitrate,
             duration: parseInt(s.duration) / 60,
@@ -161,7 +161,7 @@ function get_video_details(video_id) {
         });
     });
 
-	return new PlatformVideoDetails({
+	return new PlatformVideoDetails({ //TODO: The rest of the details below
         id: PLATFORM_ID,
         name: data.title,
         thumbnails: new Thumbnails(data.thumbnail.thumbnails.map(function(s) {
@@ -175,7 +175,7 @@ function get_video_details(video_id) {
         uploadDate: 1696880568, // TODO: find upload date
         duration: parseInt(data.lengthSeconds),
         viewCount: parseInt(data.viewCount),
-        url: url,
+        url: YTM_WATCH_URL + video_id,
         isLive: data.isLiveContent,
     
         description: "Some description",
@@ -346,7 +346,7 @@ source.getContentDetails = function(url) {
      * @param url: string
      * @returns: PlatformVideoDetails
      */
-    const parts = url.split('/');
+    const parts = url.split('v=');
     const id = parts.pop() || parts.pop();  // handle potential trailing slash
     return get_video_details(id);
     
