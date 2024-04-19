@@ -37,8 +37,7 @@ function send_request(endpoint, body, additionalParams = "") {
     let headers = {"Accept-Language": "en-US", "Cookie": "PREF=hl=en&gl=US" };
     if(true) //useMobile
 		headers["User-Agent"] = USER_AGENT_TABLET;
-        //TODO: Make this like it should be
-        const resp = http.POST("https://www.youtube.com/youtubei/v1/search?alt=json", JSON.stringify({'query': 'Never gonna give you up', 'context': {'client': {'clientName': 'WEB_REMIX', 'clientVersion': '1.20240415.01.00'}, 'user': {}}}), headers, false);
+        const resp = http.POST(YTM_BASE_API + endpoint + YTM_PARAMS + additionalParams, JSON.stringify(body), headers, false);
         return JSON.parse(resp.body);
 }
 
@@ -86,19 +85,6 @@ function player(video_id) {
     return response;
 }
 
-function streamingData(video_id) {
-    let vid_info = player(video_id);
-    if ('streamingData' in vid_info) {
-        return vid_info['streamingData'];
-    } else {
-        vid_info = player(video_id);
-        if ('streamingData' in vid_info) {
-            return vid_info['streamingData'];
-        }
-        throw new Error(`Could not find streaming data for video with id ${video_id}!!`);
-    }
-}
-
 function applyDescrambler(streamData) {
     if ('url' in streamData) {
         return null;
@@ -128,16 +114,76 @@ function applyDescrambler(streamData) {
     return formats;
 }
 
-function streams(videoId) {
-    let strms = [];
+function get_author_link(channelId) {
+    let resp = send_request("browse", {"browseId": channelId})
+    let thumbnails = resp.header.musicImmersiveHeaderRenderer.thumbnail.musicThumbnailRenderer.thumbnail.thumbnails
+    return new PlatformAuthorLink(
+        PLATFORM_ID, 
+        resp.header.musicImmersiveHeaderRenderer.title.runs[0].text, 
+        YTM_DOMAIN + "/channel/" + channelId, 
+        thumbnails[thumbnails.length-1].url);
+}
 
-    let streamManifest = applyDescrambler(streamingData(videoId));
+function get_video(video_id) {
+    let data = send_request("player", {"video_id": video_id}).videoDetails;
+    return new PlatformVideo({
+        id: PLATFORM_ID,
+        name: data.title,
+        thumbnails: new Thumbnails(data.thumbnail.thumbnails.map(function(s) {
+            return new Thumbnail(s.url, s.width);
+        })),
+        author: get_author_link(data.channelId),
+        uploadDate: 1696880568,
+        duration: parseInt(data.lengthSeconds),
+        viewCount: parseInt(data.viewCount),
+        url: YTM_WATCH_URL + video_id,
+        isLive: data.isLiveContent
+    });
+}
 
-    for (let stream of streamManifest) {
-        strms.push(stream);
-    }
+function get_video_details(video_id) {
+    let data = send_request("player", {"video_id": video_id}).videoDetails;
 
-    return strms;
+    const streams = applyDescrambler(player(video_id)['streamingData']);
+
+    let Sources = streams.map(function(s) {
+        let end = s.mimeType.indexOf(';');
+        let container = s.mimeType.slice(0, end);
+        return new VideoUrlSource({
+            width: s.width,
+            height: s.height,
+            container: container,
+            codec: result,
+            name: s.qualityLabel,
+            bitrate: s.bitrate,
+            duration: parseInt(s.duration) / 60,
+            url: s.url
+        });
+    });
+
+	return new PlatformVideoDetails({
+        id: PLATFORM_ID,
+        name: data.title,
+        thumbnails: new Thumbnails(data.thumbnail.thumbnails.map(function(s) {
+            return new Thumbnail(s.url, s.width);
+        })),
+        author: new PlatformAuthorLink(
+            PLATFORM_ID, 
+            "SomeAuthorName", 
+            "https://platform.com/your/channel/url", 
+            "../url/to/thumbnail.png"),
+        uploadDate: 1696880568, // TODO: find upload date
+        duration: parseInt(data.lengthSeconds),
+        viewCount: parseInt(data.viewCount),
+        url: url,
+        isLive: data.isLiveContent,
+    
+        description: "Some description",
+        video: new VideoSourceDescriptor(Sources),
+        live: null,
+        rating: new RatingLikes(123),
+        subtitles: []
+    });
 }
 
 source.getHome = function(continuationToken) {
@@ -145,10 +191,17 @@ source.getHome = function(continuationToken) {
      * @param continuationToken: any?
      * @returns: VideoPager
      */
-    return source.search('Never gonna give you up', 'video', 'relevance', new Map(), continuationToken);
-    const videos = []; // The results (PlatformVideo)
-    const hasMore = false; // Are there more pages?
-    const context = { continuationToken: continuationToken }; // Relevant data for the next page
+    let resp;
+    if (continuationToken) {
+        resp = send_request("browse", {"browseId": "FEmusic_home"}, "&ctoken=" + continuationToken + "&continuation=" + continuationToken)
+    } else {
+        resp = send_request("browse", {"browseId": "FEmusic_home"})
+    }
+    const videos = resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].musicCarouselShelfRenderer.contents.map(function(s) {
+        return get_video(s.musicResponsiveListItemRenderer.playlistItemData.videoId)
+    }); // The results (PlatformVideo)
+    const hasMore = true; // Are there more pages?
+    const context = { continuationToken: resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.continuations[0].nextContinuationData.continuation}; // Relevant data for the next page
     return new SomeHomeVideoPager(videos, hasMore, context);
 }
 
@@ -183,34 +236,6 @@ source.getSearchCapabilities = function() {
 	};
 }
 
-function calculateDuration(duration) {
-    const durationParts = duration.split(':');
-    return (
-        parseInt(durationParts[0]) + 60 * parseInt(durationParts[1])
-    );
-}
-
-function convertViewCount(viewCount) {
-    let scale = 1;
-    if (typeof viewCount === 'string') {
-        switch (viewCount.slice(-1)) {
-            case 'K':
-                scale = 1000;
-                break;
-            case 'M':
-                scale = 1000000;
-                break;
-            case 'B':
-                scale = 1000000000;
-                break;
-            default:
-                scale = 1;
-                break;
-        }
-    }
-    return parseFloat(viewCount) * scale;
-}
-
 source.search = function (query, type, order, filters, continuationToken) {
     /**
      * @param query: string
@@ -230,27 +255,7 @@ source.search = function (query, type, order, filters, continuationToken) {
     //TODO: Make it just the videos to make there more results
 
     const videos = resp['Songs'].map(i => { // The results (PlatformVideo)
-        const info = i.musicResponsiveListItemRenderer.flexColumns;
-        return new PlatformVideo({
-            id: PLATFORM_ID,
-            name: info[0].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text,
-            thumbnails: new Thumbnails([
-                    new Thumbnail("https://.../...", 720),
-                    new Thumbnail("https://.../...", 1080),
-                ]),
-            author: new PlatformAuthorLink(
-                new PlatformID("SomePlatformName", "SomeAuthorID", 0), 
-                "SomeAuthorName", 
-                "https://platform.com/your/channel/url", 
-                "../url/to/thumbnail.png"),
-            uploadDate: 1696880568,
-            duration: calculateDuration(info[1].musicResponsiveListItemFlexColumnRenderer.text.runs[4].text),
-            viewCount: convertViewCount(info[2].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text),
-            url: YTM_WATCH_URL + i.musicResponsiveListItemRenderer.playlistItemData.videoId,
-            isLive: false
-        });
-        //Author: info[1].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text,
-        //Album: info[1].musicResponsiveListItemFlexColumnRenderer.text.runs[2].text,
+        return get_video(YTM_WATCH_URL + i.musicResponsiveListItemRenderer.playlistItemData.videoId);
     });
     const hasMore = false; // Are there more pages?
     const context = { query: query, type: type, order: order, filters: filters, continuationToken: continuationToken }; // Relevant data for the next page
@@ -341,10 +346,10 @@ source.getContentDetails = function(url) {
      * @param url: string
      * @returns: PlatformVideoDetails
      */
-
-	return new PlatformVideoDetails({
-		//... see source.js for more details
-	});
+    const parts = url.split('/');
+    const id = parts.pop() || parts.pop();  // handle potential trailing slash
+    return get_video_details(id);
+    
 }
 
 source.getComments = function (url, continuationToken) {
