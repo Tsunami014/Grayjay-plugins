@@ -67,7 +67,7 @@ source.enable = function (conf) {
     /**
      * @param conf: SourceV8PluginConfig (the SomeConfig.js)
      */
-    const response = send_request("search", {"query": "Never gonna give you up"});
+    /*const response = send_request("search", {"query": "Never gonna give you up"});
     const resp = response.contents.tabbedSearchResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents.slice(1).reduce((acc, i) => {
         const title = i.musicShelfRenderer.title.runs[0].text;
         acc[title] = i.musicShelfRenderer.contents;
@@ -85,8 +85,115 @@ source.enable = function (conf) {
             URL: YTM_WATCH_URL + i.musicResponsiveListItemRenderer.playlistItemData.videoId,
             ID: i.musicResponsiveListItemRenderer.playlistItemData.videoId
         };
-    });
+    });*/
+    return streams('lYBUbBu4W08');
     return end;
+}
+
+const info = {
+    'context': {
+        'client': {
+            'clientName': 'ANDROID_MUSIC',
+            'clientVersion': '5.16.51',
+            'androidSdkVersion': 30
+        }
+    },
+    'header': {
+        'User-Agent': 'com.google.android.apps.youtube.music/'
+    },
+    'api_key': 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8'
+}
+
+function executeRequest(url, headers = {}, data = null) {
+    let baseHeaders = {
+        "User-Agent": "Mozilla/5.0",
+        "accept-language": "en-US,en"
+    };
+    if (headers) {
+        baseHeaders = {...baseHeaders, ...headers};
+    }
+    if (data) {
+        if (typeof data !== 'string') {
+            data = JSON.stringify(data);
+        }
+    }
+    if (!url.toLowerCase().startsWith("http")) {
+        throw new Error("Invalid URL");
+    }
+    const resp = http.POST(url, data, baseHeaders, false);
+    return JSON.parse(resp.body);;
+}
+
+function player(video_id) {
+    const endpoint = `${YTM_BASE_API}player`;
+    const query = {
+        'videoId': video_id,
+        'key': info['api_key'],
+        'contentCheckOk': true,
+        'racyCheckOk': true
+    };
+    const endpoint_url = `${endpoint}?${Object.keys(query).map(key => `${key}=${encodeURIComponent(query[key])}`).join('&')}`;
+    const headers = {'Content-Type': 'application/json', ...info['header']};
+    const response = executeRequest(
+        endpoint_url,
+        headers,
+        {'context': info['context']}
+    );
+    return response;
+}
+
+function streamingData(video_id) {
+    let vid_info = player(video_id);
+    if ('streamingData' in vid_info) {
+        return vid_info['streamingData'];
+    } else {
+        vid_info = player(video_id);
+        if ('streamingData' in vid_info) {
+            return vid_info['streamingData'];
+        }
+        throw new Error(`Could not find streaming data for video with id ${video_id}!!`);
+    }
+}
+
+function applyDescrambler(streamData) {
+    if ('url' in streamData) {
+        return null;
+    }
+
+    // Merge formats and adaptiveFormats into a single list
+    let formats = [];
+    if ('formats' in streamData) {
+        formats = formats.concat(streamData['formats']);
+    }
+    if ('adaptiveFormats' in streamData) {
+        formats = formats.concat(streamData['adaptiveFormats']);
+    }
+
+    // Extract url and s from signatureCiphers as necessary
+    for (let i = 0; i < formats.length; i++) {
+        if (!('url' in formats[i])) {
+            if ('signatureCipher' in formats[i]) {
+                let cipherUrl = new URLSearchParams(formats[i]['signatureCipher']);
+                formats[i]['url'] = cipherUrl.get('url');
+                formats[i]['s'] = cipherUrl.get('s');
+            }
+        }
+        formats[i]['is_otf'] = formats[i]['type'] === 'FORMAT_STREAM_TYPE_OTF';
+    }
+
+    return formats;
+}
+
+function streams(videoId) {
+    let strms = [];
+
+    let streamManifest = applyDescrambler(streamingData(videoId));
+
+    for (let stream of streamManifest) {
+        strms.push(stream);
+    }
+
+    return strms;
 }
 
 source.getHome = function(continuationToken) {
