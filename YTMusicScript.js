@@ -30,7 +30,7 @@ const ctx = {
     }
 }
 
-const Client = http.newClient(true);
+const PLATFORM_ID = new PlatformID("YouTube Music", "YouTube Music", 9876543123456789876543278)
 
 function send_request(endpoint, body, additionalParams = "") {
     Object.assign(body, ctx);
@@ -145,6 +145,7 @@ source.getHome = function(continuationToken) {
      * @param continuationToken: any?
      * @returns: VideoPager
      */
+    return source.search('Never gonna give you up', 'video', 'relevance', new Map(), continuationToken);
     const videos = []; // The results (PlatformVideo)
     const hasMore = false; // Are there more pages?
     const context = { continuationToken: continuationToken }; // Relevant data for the next page
@@ -182,6 +183,34 @@ source.getSearchCapabilities = function() {
 	};
 }
 
+function calculateDuration(duration) {
+    const durationParts = duration.split(':');
+    return (
+        parseInt(durationParts[0]) + 60 * parseInt(durationParts[1])
+    );
+}
+
+function convertViewCount(viewCount) {
+    let scale = 1;
+    if (typeof viewCount === 'string') {
+        switch (viewCount.slice(-1)) {
+            case 'K':
+                scale = 1000;
+                break;
+            case 'M':
+                scale = 1000000;
+                break;
+            case 'B':
+                scale = 1000000000;
+                break;
+            default:
+                scale = 1;
+                break;
+        }
+    }
+    return parseFloat(viewCount) * scale;
+}
+
 source.search = function (query, type, order, filters, continuationToken) {
     /**
      * @param query: string
@@ -191,7 +220,38 @@ source.search = function (query, type, order, filters, continuationToken) {
      * @param continuationToken: any?
      * @returns: VideoPager
      */
-    const videos = []; // The results (PlatformVideo)
+    const response = send_request("search", {"query": query});
+    const resp = response.contents.tabbedSearchResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents.slice(1).reduce((acc, i) => {
+        const title = i.musicShelfRenderer.title.runs[0].text;
+        acc[title] = i.musicShelfRenderer.contents;
+        return acc;
+    }, {});
+
+    //TODO: Make it just the videos to make there more results
+
+    const videos = resp['Songs'].map(i => { // The results (PlatformVideo)
+        const info = i.musicResponsiveListItemRenderer.flexColumns;
+        return new PlatformVideo({
+            id: PLATFORM_ID,
+            name: info[0].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text,
+            thumbnails: new Thumbnails([
+                    new Thumbnail("https://.../...", 720),
+                    new Thumbnail("https://.../...", 1080),
+                ]),
+            author: new PlatformAuthorLink(
+                new PlatformID("SomePlatformName", "SomeAuthorID", 0), 
+                "SomeAuthorName", 
+                "https://platform.com/your/channel/url", 
+                "../url/to/thumbnail.png"),
+            uploadDate: 1696880568,
+            duration: calculateDuration(info[1].musicResponsiveListItemFlexColumnRenderer.text.runs[4].text),
+            viewCount: convertViewCount(info[2].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text),
+            url: YTM_WATCH_URL + i.musicResponsiveListItemRenderer.playlistItemData.videoId,
+            isLive: false
+        });
+        //Author: info[1].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text,
+        //Album: info[1].musicResponsiveListItemFlexColumnRenderer.text.runs[2].text,
+    });
     const hasMore = false; // Are there more pages?
     const context = { query: query, type: type, order: order, filters: filters, continuationToken: continuationToken }; // Relevant data for the next page
     return new SomeSearchVideoPager(videos, hasMore, context);
