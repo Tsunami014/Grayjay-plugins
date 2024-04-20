@@ -32,6 +32,19 @@ const ctx = {
     }
 }
 
+const abr_itags = {
+    139: "48kbps",  // MP4
+    140: "128kbps",  // MP4
+    141: "256kbps",  // MP4
+    171: "128kbps",  // WEBM
+    172: "256kbps",  // WEBM
+    249: "50kbps",  // WEBM
+    250: "70kbps",  // WEBM
+    251: "160kbps",  // WEBM
+    256: "192kbps",  // MP4
+    258: "384kbps",  // MP4
+}
+
 const PLATFORM_ID = new PlatformID("YouTube Music", "YouTube Music", 9876543123456789876543278)
 
 function send_request(endpoint, body, additionalParams = "") {
@@ -148,18 +161,37 @@ function get_video_details(video_id) {
 
     const streams = applyDescrambler(player(video_id).streamingData);
 
-    let Sources = streams.map(function(s) {
-        return new VideoUrlSource({
-            width: s.width,
-            height: s.height,
-            container: s.mimeType,
-            codec: s.video_codec,
-            name: s.qualityLabel,
-            bitrate: s.bitrate,
-            duration: parseInt(s.duration) / 60,
-            url: s.url
-        });
-    });
+    let Sources = []
+    let s;
+
+    for (let i = 0; i < streams.length; i++) {
+        s = streams[i];
+        // 'video/webm; codecs="vp8, vorbis"' -> 'video/webm', ['vp8', 'vorbis']
+        const pat = /(\w+\/\w+)\;\scodecs=\"([a-zA-Z-0-9.,\s]*)\"/;
+        let results = s["mimeType"].match(pat);
+        if (!results) {
+            throw new Error(`RegexMatchError: mime_type_codec, pattern=${pat}`);
+        }
+        let mimeType = results[1];
+        let codecs = results[2].split(",").map(c => c.trim());
+
+        // 'video/webm' -> 'video', 'webm'
+        let typeSubtype = mimeType.split("/");
+        let type = typeSubtype[0];
+        let subtype = typeSubtype[1];
+        let itag = "unknown"
+        if (s.itag in abr_itags) {
+            itag = abr_itags[s.itag];
+        }
+        if (type == "audio") {
+            Sources.push(new HLSSource({
+                name: mimeType + ' ' + itag,
+                duration: parseInt(data.lengthSeconds),
+                url: s.url,
+                language: "Unknown"
+            }));
+        }
+    }
 
 	return new PlatformVideoDetails({ //TODO: The rest of the details below
         id: PLATFORM_ID,
@@ -179,7 +211,7 @@ function get_video_details(video_id) {
         isLive: data.isLiveContent,
     
         description: "Some description",
-        video: new VideoSourceDescriptor(Sources),
+        video: new UnMuxVideoSourceDescriptor([], Sources),
         live: null,
         rating: new RatingLikes(123),
         subtitles: []
