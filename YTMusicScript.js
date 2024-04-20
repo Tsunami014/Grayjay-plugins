@@ -353,9 +353,22 @@ source.isChannelUrl = function(url) {
 	return REGEX_CHANNEL_URL.test(url);
 }
 
-source.getChannel = function(url) {
+source.getChannel = function(url) { //TODO: Get the channel details
+    const parts = url.split('/');
+    const id = parts.pop() || parts.pop();  // handle potential trailing slash
+    let resp = send_request("browse", {"browseId": id})
+    if (!resp.header.musicImmersiveHeaderRenderer) {
+        return null;
+    }
+    let thumbnails = resp.header.musicImmersiveHeaderRenderer.thumbnail.musicThumbnailRenderer.thumbnail.thumbnails
 	return new PlatformChannel({
-		//... see source.js for more details
+        id: PLATFORM_ID,
+        name: resp.header.musicImmersiveHeaderRenderer.title.runs[0].text, //string
+        thumbnail: thumbnails[thumbnails.length-1].url, //string
+        banner: "HI", //string
+        subscribers: 0, //integer
+        description: "Some Description", //string
+        url: url //string
 	});
 }
 
@@ -371,7 +384,7 @@ source.getChannelContents = function(url, type, order, filters, continuationToke
 
     const videos = []; // The results (PlatformVideo)
     const hasMore = false; // Are there more pages?
-    const context = { url: url, query: query, type: type, order: order, filters: filters, continuationToken: continuationToken }; // Relevant data for the next page
+    const context = { url: url, type: type, order: order, filters: filters, continuationToken: continuationToken }; // Relevant data for the next page
     return new SomeChannelVideoPager(videos, hasMore, context);
 }
 
@@ -390,7 +403,7 @@ source.getContentDetails = function(url) {
      * @returns: PlatformVideoDetails
      */
     const parts = url.split('v=');
-    const id = parts.pop() || parts.pop();  // handle potential trailing slash
+    const id = parts.pop();
     return get_video_details(id);
     
 }
