@@ -1,28 +1,27 @@
 {
-	"name": "YouTube Music",
-	"description": "A new music service with official albums, singles, videos, remixes, live performances and more",
-	"author": "Tsunami014",
-	"authorUrl": "https://tsunami014.github.io",
-
-	"platformUrl": "https://music.youtube.com",
-	"sourceUrl": "https://tsunami014.github.io/My-Grayjay-plugin/YTMusicConfig.json",
-	"repositoryUrl": "https://github.com/Tsunami014/My-Grayjay-plugin",
-	"scriptUrl": "./YTMusicScript.js",
-	"version": 35,
-	
-	"iconUrl": "./YTMusic.png",
-	"id": "ff7fee60-202f-4aeb-a270-676862dd854b",
-	
-	"scriptSignature": "",
-	"scriptPublicKey": "",
-	"packages": ["Http"],
-	
-	"allowEval": false,
-	"allowUrls": [
-        "music.youtube.com",
-        "youtube.com",
-        "www.youtube.com"
-	],
-
-	"supportedClaimTypes": [3]
+  "name": "YouTube Music",
+  "description": "A new music service with official albums, singles, videos, remixes, live performances and more",
+  "author": "Tsunami014",
+  "authorUrl": "https://tsunami014.github.io",
+  "platformUrl": "https://music.youtube.com",
+  "sourceUrl": "https://tsunami014.github.io/My-Grayjay-plugin/YTMusicConfig.json",
+  "repositoryUrl": "https://github.com/Tsunami014/My-Grayjay-plugin",
+  "scriptUrl": "./YTMusicScript.js",
+  "version": 35,
+  "iconUrl": "./YTMusic.png",
+  "id": "ff7fee60-202f-4aeb-a270-676862dd854b",
+  "scriptSignature": "YK8l1wGcgqQHh43MefXTcQUU/maMF/2zVXh47OUkEfO4ugG4SVIhnNf27nkiLGyaALsedSo5UEio03uq2bZ1dRFGSbLtZgrjwzkMYYVNmOwkbFvdnS6Bxq1wEbk+9zEgAbIYE+UqVs6NjpkzHni8PvkS50oYxpvz5cxEiH0v0n+J8FYWdUOfYG75AwDzooY8SzzHXYJRMQg2FzwHVc+Am4Zo7YYUbjCVFvLdhNENP8QUw9anLekfXy0XNlj8L/8NZC+wNfIsHdgO5tLXRXKZIh1dTD/EAUntrHRE+jlRkXJ1LLpt8RY4e4czTS6xs+0kE0WkpYAjdQKPKBHd9jHEWAdK88ScTIZbm5BiUiadZFKlbsbAfngY6XvssHGECm7P4kZJqQLRC8q1uNW3/g+mG+tuIr3LzSy/kfKX9TO5ioN9IhSoMKZ/zOkJwkPyZNeS9GUosTzgeZd1a9doR+IRsFKE9w8nnuA7uINNiPLhas/8rUgMh1jQnpJpTb8Y9B0H",
+  "scriptPublicKey": "MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAuNJJK3A0D4NhOqMZSrtEyl0JTYZxUVXqosKT7ZopuGvq+zT5LzinI8kxr+wjMHlmN1EjNkrBitkGQEvRDpXDxIpe4IiHZRkrbFDYvxsZA3h0N0sKn8pJzMHP/orFsBi0CUWck2ynyqIsHGqqF3ziHHZi4DUIMTvdaqGAwJIYo5dDS+T/L70CfyqZhJnGMAGGMGXW0JHbmtURDz0hgMWkz/eREkYbce8aYV31JBImTosFADLQ6JPSi3rDEZagwMO2ipvK3fGsDdQfJ1CsBNR/8xJLTsJYrNoMnqLvWZRkcEBpbYB+7N6aSOVO+GdJ4S93f25Deru7BkWM/wHrJtvGDT7/a9GxfFl08jU5f7JRchn+zoqyn7db1d7rtrNiW8a4X5MNqASSkzJPPZgMrqDlCilSYkkRYsUvkhmzRPUhxYG0mv69gOqKrpLoMX3Y1IkA8iG6SWNTKiCnsrKexb+pKoZWg/76jdB1UoChBqd1divqW1Te7VUvRir400D5tjg1AgMBAAE=",
+  "packages": [
+    "Http"
+  ],
+  "allowEval": false,
+  "allowUrls": [
+    "music.youtube.com",
+    "youtube.com",
+    "www.youtube.com"
+  ],
+  "supportedClaimTypes": [
+    3
+  ]
 }

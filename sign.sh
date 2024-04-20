@@ -1,29 +1,18 @@
 #!/bin/sh
+#USAGE:
+#./sign.sh YTMusicScript.js YTMusicConfig.json
 
-# Parameters
-JS_FILE_PATH=$1
-CONFIG_FILE_PATH=$2
+#Set your key paths here
+PRIVATE_KEY_PATH=~/.ssh/id_rsa
+PUBLIC_KEY_PATH=~/.ssh/id_rsa.pub
 
-# Decode and save the private key to a temporary file
-echo "$SIGNING_PRIVATE_KEY" | base64 -d > tmp_private_key.pem
+PUBLIC_KEY_PKCS8=$(ssh-keygen -f "$PUBLIC_KEY_PATH" -e -m pkcs8 | tail -n +2 | head -n -1 | tr -d '\n')
+echo "This is your public key: '$PUBLIC_KEY_PKCS8'"
 
-# Validate private key
-if ! openssl rsa -check -noout -in tmp_private_key.pem > /dev/null 2>&1; then
-  echo "Invalid private key."
-  rm tmp_private_key.pem
-  exit 1
-fi
+DATA=$(cat "$1")
 
-# Generate signature for the provided JS file
-SIGNATURE=$(cat $JS_FILE_PATH | openssl dgst -sha512 -sign tmp_private_key.pem | base64 -w 0)
+SIGNATURE=$(echo -n "$DATA" | openssl dgst -sha512 -sign ~/.ssh/id_rsa | base64 -w 0)
+echo "This is your signature: '$SIGNATURE'"
 
-# Extract public key from the temporary private key file
-PUBLIC_KEY=$(openssl rsa -pubout -outform DER -in tmp_private_key.pem 2>/dev/null | openssl pkey -pubin -inform DER -outform PEM | tail -n +2 | head -n -1 | tr -d '\n')
+jq --arg signature "$SIGNATURE" --arg publicKey "$PUBLIC_KEY_PKCS8" '. + {scriptSignature: $signature, scriptPublicKey: $publicKey}' "$2" > tmp.$$.json && mv tmp.$$.json "$2"
 
-echo "PUBLIC_KEY: $PUBLIC_KEY"
-
-# Remove temporary key files
-rm tmp_private_key.pem
-
-# Update "scriptSignature" and "scriptPublicKey" fields in Config JSON
-cat $CONFIG_FILE_PATH | jq --arg signature "$SIGNATURE" --arg publicKey "$PUBLIC_KEY" '. + {scriptSignature: $signature, scriptPublicKey: $publicKey}' > temp_config.json && mv temp_config.json $CONFIG_FILE_PATH
