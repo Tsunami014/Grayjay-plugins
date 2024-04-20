@@ -1,4 +1,5 @@
-const REGEX_DETAILS_URL = /https?:\/\/music\.youtube\.com\/watch\?v=[a-zA-Z0-9_-]{11}/
+const REGEX_DETAILS_URL = /https?:\/\/music\.youtube\.com\/watch\?v=[a-zA-Z0-9_-]+/
+const REGEX_CHANNEL_URL = /https?:\/\/music\.youtube\.com\/channel\/[a-zA-Z0-9_-]+/
 
 const USER_AGENT_TABLET = "Mozilla/5.0 (iPad; CPU OS 13_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/87.0.4280.77 Mobile/15E148 Safari/604.1";
 
@@ -132,11 +133,7 @@ function applyDescrambler(streamData) {
 function get_author_link(channelId) {
     let resp = send_request("browse", {"browseId": channelId})
     if (!resp.header.musicImmersiveHeaderRenderer) {
-        return new PlatformAuthorLink(
-            PLATFORM_ID, 
-            "????", 
-            YTM_DOMAIN + "/channel/" + channelId, 
-        );
+        return null;
     }
     let thumbnails = resp.header.musicImmersiveHeaderRenderer.thumbnail.musicThumbnailRenderer.thumbnail.thumbnails
     return new PlatformAuthorLink(
@@ -149,6 +146,9 @@ function get_author_link(channelId) {
 
 function get_video(video_id) {
     let data = send_request("player", {"video_id": video_id}).videoDetails;
+    if (!data) {
+        return null;
+    }
     return new PlatformVideo({
         id: PLATFORM_ID,
         name: data.title,
@@ -233,6 +233,12 @@ source.getHome = function(continuationToken) {
         resp = send_request("browse", {"browseId": "FEmusic_home"}, "&ctoken=" + continuationToken + "&continuation=" + continuationToken)
     } else {
         resp = send_request("browse", {"browseId": "FEmusic_home"})
+    }
+    if (!resp.contents.singleColumnBrowseResultsRenderer) {
+        return null;
+    }
+    if (!resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content) {
+        return null;
     }
     const videos = resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].musicCarouselShelfRenderer.contents.map(function(s) {
         return get_video(s.musicResponsiveListItemRenderer.playlistItemData.videoId)
