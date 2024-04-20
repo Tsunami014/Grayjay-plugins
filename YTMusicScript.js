@@ -352,7 +352,7 @@ source.search = function (query, type, order, filters, continuationToken) {
     //TODO: Make it just the videos to make there more results
 
     const videos = get_videos(resp['Songs'].map(i => { // The results (PlatformVideo)
-        i.musicResponsiveListItemRenderer.playlistItemData.videoId
+        return i.musicResponsiveListItemRenderer.playlistItemData.videoId;
     }));
     const hasMore = false; // Are there more pages?
     const context = { query: query, type: type, order: order, filters: filters, continuationToken: continuationToken }; // Relevant data for the next page
