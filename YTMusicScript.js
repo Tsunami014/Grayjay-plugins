@@ -145,7 +145,9 @@ function get_author_link(channelId) {
 }
 
 function get_video(video_id) {
-    let data = send_request("player", {"video_id": video_id}).videoDetails;
+    let player_data = send_request("player", {"video_id": video_id})
+    let data = player_data.videoDetails;
+    let data2 = player_data.microformat.microformatDataRenderer;
     if (!data) {
         return null;
     }
@@ -156,7 +158,7 @@ function get_video(video_id) {
             return new Thumbnail(s.url, s.width);
         })),
         author: get_author_link(data.channelId),
-        uploadDate: 1696880568,
+        uploadDate: Date.parse(data2.uploadDate),
         duration: parseInt(data.lengthSeconds),
         viewCount: parseInt(data.viewCount),
         url: YTM_WATCH_URL + video_id,
@@ -165,7 +167,9 @@ function get_video(video_id) {
 }
 
 function get_video_details(video_id) {
-    let data = send_request("player", {"video_id": video_id}).videoDetails;
+    let player_data = send_request("player", {"video_id": video_id})
+    let data = player_data.videoDetails;
+    let data2 = player_data.microformat.microformatDataRenderer;
 
     const streams = applyDescrambler(player(video_id).streamingData);
 
@@ -202,23 +206,22 @@ function get_video_details(video_id) {
         }
     }
 
-	return new PlatformVideoDetails({ //TODO: The rest of the details below
+	return new PlatformVideoDetails({
         id: PLATFORM_ID,
         name: data.title,
         thumbnails: new Thumbnails(data.thumbnail.thumbnails.map(function(s) {
             return new Thumbnail(s.url, s.width);
         })),
         author: get_author_link(data.channelId),
-        uploadDate: 1696880568,
-        //duration: parseInt(data.lengthSeconds),
+        uploadDate: Date.parse(data2.uploadDate),
         viewCount: parseInt(data.viewCount),
         url: YTM_WATCH_URL + video_id,
-        isLive: false,//data.isLiveContent,
+        isLive: data.isLiveContent,
     
-        description: "Some description",
+        description: data2.description + "\n\n" + data2.tags[0] + ": " + data2.tags[2] + " [" + data2.tags[1] + "]",
         video: new UnMuxVideoSourceDescriptor([], Sources),
         //live: null,
-        rating: new RatingLikes(123),
+        rating: new RatingLikes(0), // No way to access the rating on the API
         subtitles: []
     });
 }
@@ -324,6 +327,7 @@ source.searchChannelContents = function (url, query, type, order, filters, conti
      * @param continuationToken: any?
      * @returns: VideoPager
      */
+    //[i['musicCarouselShelfRenderer']['header']['musicCarouselShelfBasicHeaderRenderer']['title']['runs'][0]['text'] for i in resp['contents']['singleColumnBrowseResultsRenderer']['tabs'][0]['tabRenderer']['content']['sectionListRenderer']['contents'][2]]
 
     const videos = []; // The results (PlatformVideo)
     const hasMore = false; // Are there more pages?
@@ -353,6 +357,23 @@ source.isChannelUrl = function(url) {
 	return REGEX_CHANNEL_URL.test(url);
 }
 
+function StringToNumber(str) {
+    let factor = 1;
+    if (str.endsWith('B')) {
+        factor = 1e9;
+    } else if (str.endsWith('M')) {
+        factor = 1e6;
+    } else if (str.endsWith('K')) {
+        factor = 1e3;
+    }
+
+    // Remove the suffix and convert to a number
+    let number = parseFloat(str.slice(0, -1));
+
+    // Multiply by the factor
+    return Math.round(number * factor);
+}
+
 source.getChannel = function(url) { //TODO: Get the channel details
     const parts = url.split('/');
     const id = parts.pop() || parts.pop();  // handle potential trailing slash
@@ -365,9 +386,9 @@ source.getChannel = function(url) { //TODO: Get the channel details
         id: PLATFORM_ID,
         name: resp.header.musicImmersiveHeaderRenderer.title.runs[0].text, //string
         thumbnail: thumbnails[thumbnails.length-1].url, //string
-        banner: "HI", //string
-        subscribers: 0, //integer
-        description: "Some Description", //string
+        banner: thumbnails[thumbnails.length-1].url, //string (probably url to an image)
+        subscribers: StringToNumber(resp.header.musicImmersiveHeaderRenderer.subscriptionButton.subscribeButtonRenderer.shortSubscriberCountText.runs[0].text), //integer
+        description: resp.header.musicImmersiveHeaderRenderer.description.runs[0].text, //string
         url: url //string
 	});
 }
