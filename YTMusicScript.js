@@ -167,11 +167,11 @@ function get_author_link(channelId) {
 
 function get_video(video_id) {
     let player_data = send_request("player", {"video_id": video_id})
-    let data = player_data.videoDetails;
-    let data2 = player_data.microformat.microformatDataRenderer;
-    if (!data) {
+    if (!player_data.videoDetails || !player_data.microformat) {
         return null;
     }
+    let data = player_data.videoDetails;
+    let data2 = player_data.microformat.microformatDataRenderer;
     return new PlatformVideo({
         id: PLATFORM_ID,
         name: data.title,
@@ -187,7 +187,7 @@ function get_video(video_id) {
     });
 }
 
-function get_videoes(video_ids) {
+function get_videos(video_ids) {
     let player_datas = batch_send_request(Array(video_ids.length).fill("player"), video_ids.map(i => ({"video_id": i})))
     let player_data;
     let output = [];
@@ -195,7 +195,7 @@ function get_videoes(video_ids) {
         player_data = player_datas[i];
 
         if (!player_data.videoDetails || !player_data.microformat) {
-            return null;
+            continue;
         }
         let data = player_data.videoDetails;
         let data2 = player_data.microformat.microformatDataRenderer;
@@ -293,13 +293,13 @@ source.getHome = function(continuationToken) {
     if (!resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content) {
         return null;
     }
-    const videoes = get_videoes( // The results (PlatformVideo)
+    const videos = get_videos( // The results (PlatformVideo)
         resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].musicCarouselShelfRenderer.contents.map(function(s) {
             return s.musicResponsiveListItemRenderer.playlistItemData.videoId
         }))
     const hasMore = false; // Are there more pages?
     const context = { continuationToken: resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.continuations[0].nextContinuationData.continuation}; // Relevant data for the next page
-    return new SomeHomeVideoPager(videoes, hasMore, context);
+    return new SomeHomeVideoPager(videos, hasMore, context);
 }
 
 source.searchSuggestions = function(query) {
@@ -351,9 +351,9 @@ source.search = function (query, type, order, filters, continuationToken) {
 
     //TODO: Make it just the videos to make there more results
 
-    const videos = resp['Songs'].map(i => { // The results (PlatformVideo)
-        return get_video(YTM_WATCH_URL + i.musicResponsiveListItemRenderer.playlistItemData.videoId);
-    });
+    const videos = get_videos(resp['Songs'].map(i => { // The results (PlatformVideo)
+        i.musicResponsiveListItemRenderer.playlistItemData.videoId
+    }));
     const hasMore = false; // Are there more pages?
     const context = { query: query, type: type, order: order, filters: filters, continuationToken: continuationToken }; // Relevant data for the next page
     return new SomeSearchVideoPager(videos, hasMore, context);
