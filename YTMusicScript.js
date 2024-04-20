@@ -131,12 +131,20 @@ function applyDescrambler(streamData) {
 
 function get_author_link(channelId) {
     let resp = send_request("browse", {"browseId": channelId})
+    if (!resp.header.musicImmersiveHeaderRenderer) {
+        return new PlatformAuthorLink(
+            PLATFORM_ID, 
+            "????", 
+            YTM_DOMAIN + "/channel/" + channelId, 
+        );
+    }
     let thumbnails = resp.header.musicImmersiveHeaderRenderer.thumbnail.musicThumbnailRenderer.thumbnail.thumbnails
     return new PlatformAuthorLink(
         PLATFORM_ID, 
         resp.header.musicImmersiveHeaderRenderer.title.runs[0].text, 
         YTM_DOMAIN + "/channel/" + channelId, 
-        thumbnails[thumbnails.length-1].url);
+        thumbnails[thumbnails.length-1].url
+    );
 }
 
 function get_video(video_id) {
@@ -184,11 +192,12 @@ function get_video_details(video_id) {
             itag = abr_itags[s.itag];
         }
         if (type == "audio") {
-            Sources.push(new HLSSource({
+            Sources.push(new AudioUrlSource({
                 name: mimeType + ' ' + itag,
-                duration: parseInt(data.lengthSeconds),
                 url: s.url,
-                language: "Unknown"
+                bitrate: parseInt(s.bitrate),
+                codec: codecs[0],
+                duration: parseInt(data.lengthSeconds),
             }));
         }
     }
@@ -199,20 +208,16 @@ function get_video_details(video_id) {
         thumbnails: new Thumbnails(data.thumbnail.thumbnails.map(function(s) {
             return new Thumbnail(s.url, s.width);
         })),
-        author: new PlatformAuthorLink(
-            PLATFORM_ID, 
-            "SomeAuthorName", 
-            "https://platform.com/your/channel/url", 
-            "../url/to/thumbnail.png"),
-        uploadDate: 1696880568, // TODO: find upload date
-        duration: parseInt(data.lengthSeconds),
+        author: get_author_link(data.channelId),
+        uploadDate: 1696880568,
+        //duration: parseInt(data.lengthSeconds),
         viewCount: parseInt(data.viewCount),
         url: YTM_WATCH_URL + video_id,
-        isLive: data.isLiveContent,
+        isLive: false,//data.isLiveContent,
     
         description: "Some description",
         video: new UnMuxVideoSourceDescriptor([], Sources),
-        live: null,
+        //live: null,
         rating: new RatingLikes(123),
         subtitles: []
     });
