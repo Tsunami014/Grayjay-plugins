@@ -57,6 +57,27 @@ function send_request(endpoint, body, additionalParams = "") {
         return JSON.parse(resp.body);
 }
 
+function batch_send_request(endpoints, bodies, additionalParams = {0: ""}) {
+    let batch_handler = http.batch();
+    let headers = {"Accept-Language": "en-US", "Cookie": "PREF=hl=en&gl=US" };
+    let add_param;
+    headers["User-Agent"] = USER_AGENT_TABLET;
+    for (let i = 0; i < endpoints.length; i++) {
+        Object.assign(bodies[i], ctx);
+        add_param = ""
+        if (i in additionalParams) {
+            add_param = additionalParams[i];
+        }
+        batch_handler.POST(YTM_BASE_API + endpoints[i] + YTM_PARAMS + add_param, JSON.stringify(bodies[i]), headers, false);
+    }
+    let responses = batch_handler.execute();
+    let results = [];
+    for (let i = 0; i < responses.length; i++) {
+        results.push(JSON.parse(responses[i].body));
+    }
+    return results;
+}
+
 source.enable = function (conf) {
     /**
      * @param conf: SourceV8PluginConfig (the SomeConfig.js)
@@ -166,6 +187,35 @@ function get_video(video_id) {
     });
 }
 
+function get_videoes(video_ids) {
+    let player_datas = batch_send_request(Array(video_ids.length).fill("player"), video_ids.map(i => ({"video_id": i})))
+    let player_data;
+    let output = [];
+    for (let i = 0; i < player_datas.length; i++) {
+        player_data = player_datas[i];
+
+        if (!player_data.videoDetails || !player_data.microformat) {
+            return null;
+        }
+        let data = player_data.videoDetails;
+        let data2 = player_data.microformat.microformatDataRenderer;
+        output.push(new PlatformVideo({
+            id: PLATFORM_ID,
+            name: data.title,
+            thumbnails: new Thumbnails(data.thumbnail.thumbnails.map(function(s) {
+                return new Thumbnail(s.url, s.width);
+            })),
+            author: get_author_link(data.channelId),
+            uploadDate: Date.parse(data2.uploadDate),
+            duration: parseInt(data.lengthSeconds),
+            viewCount: parseInt(data.viewCount),
+            url: YTM_WATCH_URL + video_ids[i],
+            isLive: data.isLiveContent
+        }));
+    }
+    return output;
+}
+
 function get_video_details(video_id) {
     let player_data = send_request("player", {"video_id": video_id})
     let data = player_data.videoDetails;
@@ -243,12 +293,13 @@ source.getHome = function(continuationToken) {
     if (!resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content) {
         return null;
     }
-    const videos = resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].musicCarouselShelfRenderer.contents.map(function(s) {
-        return get_video(s.musicResponsiveListItemRenderer.playlistItemData.videoId)
-    }); // The results (PlatformVideo)
-    const hasMore = true; // Are there more pages?
+    const videoes = get_videoes( // The results (PlatformVideo)
+        resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].musicCarouselShelfRenderer.contents.map(function(s) {
+            return s.musicResponsiveListItemRenderer.playlistItemData.videoId
+        }))
+    const hasMore = false; // Are there more pages?
     const context = { continuationToken: resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.continuations[0].nextContinuationData.continuation}; // Relevant data for the next page
-    return new SomeHomeVideoPager(videos, hasMore, context);
+    return new SomeHomeVideoPager(videoes, hasMore, context);
 }
 
 source.searchSuggestions = function(query) {
