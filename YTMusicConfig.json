@@ -26,9 +26,15 @@
   ],
   "settings": [
     {
+      "variable": "header",
+      "name": "Loader",
+      "description": "Change which algorithm loads specific parts of the app. Faster algorithm may not have as much information (e.g. author name may be missing).\nThe `Everything` option loads everything, which is very slow.\nThe Most things loads at a medium speed and loads everything but the thumbnails on the authours, which is why it is recommended\nAnd Just the necesities loads really fast (~1 sec) but only loads the picture, the title of the song and half the time the author name. Other things will be missing",
+      "type": "Header"
+    },
+    {
       "variable": "HomePageType",
       "name": "Home Page Loader",
-      "description": "Change which algorithm loads the home screen. Faster algorithm may not have as much information (e.g. author name may be missing).",
+      "description": "Change the home page loader algorithm",
       "type": "Dropdown",
       "default": "1",
       "options": [
