@@ -1,5 +1,7 @@
 # My Grayjay plugins
 I am making multiple, as seen below
+
+Current status: [![pages-build-deployment](https://github.com/Tsunami014/My-Grayjay-plugin/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/Tsunami014/My-Grayjay-plugin/actions/workflows/pages/pages-build-deployment)
 ## Medium.com
 This plugin is not actually possible yet, because they still have yet to develop something for articles, currently only platform posts are supported and it doesn't work with that, but I'm keeping the js file in case they add it in
 ## Youtube music
