@@ -185,7 +185,7 @@ function get_video(video_id) {
             return new Thumbnail(s.url, s.width);
         })),
         author: get_author_link(data.channelId),
-        uploadDate: Date.parse(data2.uploadDate),
+        uploadDate: Date.parse(data2.uploadDate) / 1000,
         duration: parseInt(data.lengthSeconds),
         viewCount: parseInt(data.viewCount),
         url: YTM_WATCH_URL + video_id,
@@ -193,7 +193,7 @@ function get_video(video_id) {
     });
 }
 
-function get_videos(video_ids) {
+function get_videos(video_ids, use_thumbnail = false) { // False thumbnail is faster
     let player_datas = batch_send_request(Array(video_ids.length).fill("player"), video_ids.map(i => ({"video_id": i})))
     let player_data;
     let output = [];
@@ -205,14 +205,24 @@ function get_videos(video_ids) {
         }
         let data = player_data.videoDetails;
         let data2 = player_data.microformat.microformatDataRenderer;
+        let author;
+        if (use_thumbnail) {
+            author = get_author_link(data.channelId);
+        } else {
+            author = new PlatformAuthorLink(
+                PLATFORM_ID, 
+                data2.pageOwnerDetails.name.slice(0, -8), 
+                data2.pageOwnerDetails.youtubeProfileUrl,
+            );
+        }
         output.push(new PlatformVideo({
             id: PLATFORM_ID,
             name: data.title,
             thumbnails: new Thumbnails(data.thumbnail.thumbnails.map(function(s) {
                 return new Thumbnail(s.url, s.width);
             })),
-            author: get_author_link(data.channelId),
-            uploadDate: Date.parse(data2.uploadDate),
+            author: author,
+            uploadDate: Date.parse(data2.uploadDate) / 1000,
             duration: parseInt(data.lengthSeconds),
             viewCount: parseInt(data.viewCount),
             url: YTM_WATCH_URL + video_ids[i],
@@ -269,7 +279,7 @@ function get_video_details(video_id) {
             return new Thumbnail(s.url, s.width);
         })),
         author: get_author_link(data.channelId),
-        uploadDate: Date.parse(data2.uploadDate),
+        uploadDate: Date.parse(data2.uploadDate) / 1000,
         viewCount: parseInt(data.viewCount),
         url: YTM_WATCH_URL + video_id,
         isLive: data.isLiveContent,
@@ -280,34 +290,6 @@ function get_video_details(video_id) {
         rating: new RatingLikes(0), // No way to access the rating on the API
         subtitles: []
     });
-}
-
-function get_video_fast(info) {
-    if (info.menu.menuRenderer.items[7]) {
-        return new PlatformVideo({
-            id: PLATFORM_ID,
-            name: info.flexColumns[0].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text,
-            thumbnails: new Thumbnails(info.thumbnail.musicThumbnailRenderer.thumbnail.thumbnails.map(function(s) {
-                return new Thumbnail(s.url, s.width);
-            })),
-            author: new PlatformAuthorLink(
-                PLATFORM_ID, 
-                info.flexColumns[1].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text, 
-                YTM_DOMAIN + "/channel/" + info.menu.menuRenderer.items[7].menuNavigationItemRenderer.navigationEndpoint.browseEndpoint.browseId, 
-            ),
-            url: YTM_WATCH_URL + info.playlistItemData.videoId,
-        });
-    } else {
-        return new PlatformVideo({
-            id: PLATFORM_ID,
-            name: info.flexColumns[0].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text,
-            thumbnails: new Thumbnails(info.thumbnail.musicThumbnailRenderer.thumbnail.thumbnails.map(function(s) {
-                return new Thumbnail(s.url, s.width);
-            })),
-            author: UNKNOWN_AUTHOUR,
-            url: YTM_WATCH_URL + info.playlistItemData.videoId,
-        });
-    }
 }
 
 source.getHome = function(continuationToken) {
@@ -328,9 +310,10 @@ source.getHome = function(continuationToken) {
         return null;
     }
     // The results (PlatformVideo)
-    const videos = resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].musicCarouselShelfRenderer.contents.map(function(s) {
-                        return get_video_fast(s.musicResponsiveListItemRenderer)
-                   })
+    const videos = get_videos( // The results (PlatformVideo)
+                              resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].musicCarouselShelfRenderer.contents.map(function(s) {
+                                  return s.musicResponsiveListItemRenderer.playlistItemData.videoId
+                              }))
     const hasMore = false; // Are there more pages?
     const context = { continuationToken: resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.continuations[0].nextContinuationData.continuation}; // Relevant data for the next page
     return new SomeHomeVideoPager(videos, hasMore, context);
