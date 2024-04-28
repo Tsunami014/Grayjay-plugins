@@ -54,6 +54,11 @@ const UNKNOWN_AUTHOUR = new PlatformAuthorLink(
     "", 
 )
 
+var _settings = {};
+source.setSettings = function(settings) {
+	_settings = settings;
+}
+
 function send_request(endpoint, body, additionalParams = "") {
     Object.assign(body, ctx);
     let headers = {"Accept-Language": "en-US", "Cookie": "PREF=hl=en&gl=US" };
@@ -84,10 +89,8 @@ function batch_send_request(endpoints, bodies, additionalParams = {0: ""}) {
     return results;
 }
 
-source.enable = function (conf) {
-    /**
-     * @param conf: SourceV8PluginConfig (the SomeConfig.js)
-     */
+source.enable = function (conf, settings) {
+    _settings = settings ?? {};
 }
 
 function executeRequest(url, headers = {}, data = null) {
@@ -292,6 +295,34 @@ function get_video_details(video_id) {
     });
 }
 
+function get_video_fast(info) {
+    if (info.menu.menuRenderer.items[7]) {
+        return new PlatformVideo({
+            id: PLATFORM_ID,
+            name: info.flexColumns[0].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text,
+            thumbnails: new Thumbnails(info.thumbnail.musicThumbnailRenderer.thumbnail.thumbnails.map(function(s) {
+                return new Thumbnail(s.url, s.width);
+            })),
+            author: new PlatformAuthorLink(
+                PLATFORM_ID, 
+                info.flexColumns[1].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text, 
+                YTM_DOMAIN + "/channel/" + info.menu.menuRenderer.items[7].menuNavigationItemRenderer.navigationEndpoint.browseEndpoint.browseId, 
+            ),
+            url: YTM_WATCH_URL + info.playlistItemData.videoId,
+        });
+    } else {
+        return new PlatformVideo({
+            id: PLATFORM_ID,
+            name: info.flexColumns[0].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text,
+            thumbnails: new Thumbnails(info.thumbnail.musicThumbnailRenderer.thumbnail.thumbnails.map(function(s) {
+                return new Thumbnail(s.url, s.width);
+            })),
+            author: UNKNOWN_AUTHOUR,
+            url: YTM_WATCH_URL + info.playlistItemData.videoId,
+        });
+    }
+}
+
 source.getHome = function(continuationToken) {
     /**
      * @param continuationToken: any?
@@ -310,10 +341,17 @@ source.getHome = function(continuationToken) {
         return null;
     }
     // The results (PlatformVideo)
-    const videos = get_videos( // The results (PlatformVideo)
-                              resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].musicCarouselShelfRenderer.contents.map(function(s) {
-                                  return s.musicResponsiveListItemRenderer.playlistItemData.videoId
-                              }))
+    const typ = _settings["HomePageType"]
+    var videos;
+    if (typ == 2) {
+        videos = resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].musicCarouselShelfRenderer.contents.map(function(s) {
+            return get_video_fast(s.musicResponsiveListItemRenderer)
+       })
+    } else {
+        videos = get_videos(resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].musicCarouselShelfRenderer.contents.map(function(s) {
+                                return s.musicResponsiveListItemRenderer.playlistItemData.videoId
+                            }), typ == 0)
+    }
     const hasMore = false; // Are there more pages?
     const context = { continuationToken: resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.continuations[0].nextContinuationData.continuation}; // Relevant data for the next page
     return new SomeHomeVideoPager(videos, hasMore, context);

@@ -10,7 +10,7 @@
   "version": 0,
   "iconUrl": "./YTMusic.png",
   "id": "ff7fee60-202f-4aeb-a270-676862dd854b",
-  "scriptSignature": "G+8CqzP5/zLbqU5yUwdVFEs0ghmR16lHzFrUJNFvjub1x2UACRd0MguGdO27kbVu8PKYxeDFAD0zOdjolKcF1MX+jObEkK6lQYV2fjAIFRzvBPgl51IkRRMIpExnzP8NAPQG6OwiQdvIu3Q/2QbSmx9V+2pecTCdTYENqtE9yKfCfTEAo5Ds6iNDhEc1P3zpXephfCnljw4szmS+BTH1QmaLM7B31BzkbCo1SZCzjQtZCoWyu3M+fALrDBjzLV+aSrUMFbIpROTVmKcu58CTixRUfmY4mxbB3YTDdQvphVIvT6fXI5+fkJ3aGs+n8cWzGXLuVyc32ymitRVRqvBaVvMg5d1MWMmIMm61UcPqpl02UaYdsB6uyFVta/OXB93yk5C7lFAuzVdbBk96tUgi1KlttdBFy/k2pWOJHLQUzN1W/Od+QF0/xCsAjC6bmA+Y3KD7xrFgieGYHQI8Y67nrjdkaYIHCzbXxsJULY9drPCLwRPrt+Z1UKIVbaTJp3r4",
+  "scriptSignature": "b5oUHNybshPEivyrLcgLNghhQ/FkehklCbINI00OFIAd9bVInyyCM4/imxDTG2pOJgMG+yFYH6naNS2GLsDP7kgBBulOZUrbzML451CIE9zH6itawn7OY8e/nyw+yPGN7FqaP/fCNe29LtiRSJ5No2nS+xtemV8zxMf+MgCKisSZfhqwvWjBpEC1TiPcv8pjAC8DgmqzJiPiomeSM1+hH4YfbAfDD0yBO7L3ZfS/Vi3Z4jiU9ZuNqUb3ksN8/u7TsPSe0GuSj6mcFbuxY84R96CzdtA8REmqApXqMS5mBAzrBwBEHXHeAIkFZOCrD7dVssIQDnj9hQ0A8zQZ6N1nNRsgy1iK5gl6r8VfWC7Mw695Q2nZbpw3w5Ia7/PtOr8MuAjJ3z7I3nW7tzwnsty8QNVjy18a0k7Ns2SKZdIQZSCr4xCE53bjAdozM4/pjGqAGRbOd7J3Lorpn5e+vt5bIs6pKMf0cF3EXqaQAEM2NdtvPpomgzGPw4wLO6t3JHjw",
   "scriptPublicKey": "MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAuNJJK3A0D4NhOqMZSrtEyl0JTYZxUVXqosKT7ZopuGvq+zT5LzinI8kxr+wjMHlmN1EjNkrBitkGQEvRDpXDxIpe4IiHZRkrbFDYvxsZA3h0N0sKn8pJzMHP/orFsBi0CUWck2ynyqIsHGqqF3ziHHZi4DUIMTvdaqGAwJIYo5dDS+T/L70CfyqZhJnGMAGGMGXW0JHbmtURDz0hgMWkz/eREkYbce8aYV31JBImTosFADLQ6JPSi3rDEZagwMO2ipvK3fGsDdQfJ1CsBNR/8xJLTsJYrNoMnqLvWZRkcEBpbYB+7N6aSOVO+GdJ4S93f25Deru7BkWM/wHrJtvGDT7/a9GxfFl08jU5f7JRchn+zoqyn7db1d7rtrNiW8a4X5MNqASSkzJPPZgMrqDlCilSYkkRYsUvkhmzRPUhxYG0mv69gOqKrpLoMX3Y1IkA8iG6SWNTKiCnsrKexb+pKoZWg/76jdB1UoChBqd1divqW1Te7VUvRir400D5tjg1AgMBAAE=",
   "packages": [
     "Http"
@@ -23,5 +23,19 @@
   ],
   "supportedClaimTypes": [
     3
+  ],
+  "settings": [
+    {
+      "variable": "HomePageType",
+      "name": "Home Page Loader",
+      "description": "Change which algorithm loads the home screen. Faster algorithm may not have as much information (e.g. author name may be missing).",
+      "type": "Dropdown",
+      "default": "1",
+      "options": [
+        "Everything (slow)",
+        "Most things (recommended)",
+        "Just the necesities (fast)"
+      ]
+    }
   ]
 }
