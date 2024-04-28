@@ -6,7 +6,7 @@
     "configurations": [
         {
             "type": "node-terminal",
-            "command": "npx serve",
+            "command": "npx serve -n",
             "request": "launch",
             "name": "Serve"
         }
