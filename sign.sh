@@ -1,6 +1,6 @@
 #!/bin/sh
-#USAGE:
-#./sign.sh YTMusicScript.js YTMusicConfig.json
+# USAGE:
+# ./sign.sh YTMusicScript.js YTMusicConfig.json
 
 # Parameters
 JS_FILE_PATH=$1

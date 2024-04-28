@@ -48,6 +48,12 @@ const abr_itags = {
 
 const PLATFORM_ID = new PlatformID("YouTube Music", "YouTube Music", 9876543123456789876543278)
 
+const UNKNOWN_AUTHOUR = new PlatformAuthorLink(
+    PLATFORM_ID, 
+    "UNKNOWN", 
+    "", 
+)
+
 function send_request(endpoint, body, additionalParams = "") {
     Object.assign(body, ctx);
     let headers = {"Accept-Language": "en-US", "Cookie": "PREF=hl=en&gl=US" };
@@ -276,6 +282,34 @@ function get_video_details(video_id) {
     });
 }
 
+function get_video_fast(info) {
+    if (info.menu.menuRenderer.items[7]) {
+        return new PlatformVideo({
+            id: PLATFORM_ID,
+            name: info.flexColumns[0].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text,
+            thumbnails: new Thumbnails(info.thumbnail.musicThumbnailRenderer.thumbnail.thumbnails.map(function(s) {
+                return new Thumbnail(s.url, s.width);
+            })),
+            author: new PlatformAuthorLink(
+                PLATFORM_ID, 
+                info.flexColumns[1].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text, 
+                YTM_DOMAIN + "/channel/" + info.menu.menuRenderer.items[7].menuNavigationItemRenderer.navigationEndpoint.browseEndpoint.browseId, 
+            ),
+            url: YTM_WATCH_URL + info.playlistItemData.videoId,
+        });
+    } else {
+        return new PlatformVideo({
+            id: PLATFORM_ID,
+            name: info.flexColumns[0].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text,
+            thumbnails: new Thumbnails(info.thumbnail.musicThumbnailRenderer.thumbnail.thumbnails.map(function(s) {
+                return new Thumbnail(s.url, s.width);
+            })),
+            author: UNKNOWN_AUTHOUR,
+            url: YTM_WATCH_URL + info.playlistItemData.videoId,
+        });
+    }
+}
+
 source.getHome = function(continuationToken) {
     /**
      * @param continuationToken: any?
@@ -293,10 +327,10 @@ source.getHome = function(continuationToken) {
     if (!resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content) {
         return null;
     }
-    const videos = get_videos( // The results (PlatformVideo)
-        resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].musicCarouselShelfRenderer.contents.map(function(s) {
-            return s.musicResponsiveListItemRenderer.playlistItemData.videoId
-        }))
+    // The results (PlatformVideo)
+    const videos = resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].musicCarouselShelfRenderer.contents.map(function(s) {
+                        return get_video_fast(s.musicResponsiveListItemRenderer)
+                   })
     const hasMore = false; // Are there more pages?
     const context = { continuationToken: resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.continuations[0].nextContinuationData.continuation}; // Relevant data for the next page
     return new SomeHomeVideoPager(videos, hasMore, context);
