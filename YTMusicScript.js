@@ -339,7 +339,6 @@ source.getHome = function(continuationToken) {
     } else {
         resp = send_request("browse", {"browseId": "FEmusic_home"})
     }
-    return resp;
     if (!resp.contents.singleColumnBrowseResultsRenderer) {
         return null;
     }
