@@ -335,15 +335,15 @@ source.getHome = function(continuationToken) {
      */
     let resp;
     if (continuationToken) {
-        resp = send_request("browse", {"browseId": "FEmusic_home"}, "&ctoken=" + continuationToken + "&continuation=" + continuationToken)
+        resp = send_request("browse", {"browseId": "FEmusic_home"}, `&ctoken=${continuationToken}&continuation=${continuationToken}`)
     } else {
         resp = send_request("browse", {"browseId": "FEmusic_home"})
     }
     if (!resp.contents.singleColumnBrowseResultsRenderer) {
-        return null;
+        return new SomeHomeVideoPager([], false, {});
     }
     if (!resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content) {
-        return null;
+        return new SomeHomeVideoPager([], false, {});
     }
     // The results (PlatformVideo)
     const typ = _settings["HomePageType"]
@@ -357,7 +357,7 @@ source.getHome = function(continuationToken) {
                                 return s.musicResponsiveListItemRenderer.playlistItemData.videoId
                             }), typ == 0)
     }
-    const hasMore = false; // Are there more pages?
+    const hasMore = true; // Are there more pages?
     const context = { continuationToken: resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.continuations[0].nextContinuationData.continuation}; // Relevant data for the next page
     return new SomeHomeVideoPager(videos, hasMore, context);
 }
@@ -408,8 +408,6 @@ source.search = function (query, type, order, filters, continuationToken) {
         acc[title] = i.musicShelfRenderer.contents;
         return acc;
     }, {});
-
-    //TODO: Make it just the videos to make there more results
 
     // The results (PlatformVideo)
     const typ = _settings["SearchPageType"]
