@@ -54,6 +54,11 @@ const UNKNOWN_AUTHOUR = new PlatformAuthorLink(
     "", 
 )
 
+const UseAuth = [
+    "search",
+    "browse"
+]
+
 var _settings = {};
 source.setSettings = function(settings) {
 	_settings = settings;
@@ -64,7 +69,7 @@ function send_request(endpoint, body, additionalParams = "") {
     let headers = {"Accept-Language": "en-US", "Cookie": "PREF=hl=en&gl=US" };
     if(true) //useMobile
 		headers["User-Agent"] = USER_AGENT_TABLET;
-        const resp = http.POST(YTM_BASE_API + endpoint + YTM_PARAMS + additionalParams, JSON.stringify(body), headers, false);
+        const resp = http.POST(YTM_BASE_API + endpoint + YTM_PARAMS + additionalParams, JSON.stringify(body), headers, UseAuth.includes(endpoint));
         return JSON.parse(resp.body);
 }
 
@@ -79,7 +84,7 @@ function batch_send_request(endpoints, bodies, additionalParams = {0: ""}) {
         if (i in additionalParams) {
             add_param = additionalParams[i];
         }
-        batch_handler.POST(YTM_BASE_API + endpoints[i] + YTM_PARAMS + add_param, JSON.stringify(bodies[i]), headers, false);
+        batch_handler.POST(YTM_BASE_API + endpoints[i] + YTM_PARAMS + add_param, JSON.stringify(bodies[i]), headers, UseAuth.includes(endpoints[i]));
     }
     let responses = batch_handler.execute();
     let results = [];
@@ -334,6 +339,7 @@ source.getHome = function(continuationToken) {
     } else {
         resp = send_request("browse", {"browseId": "FEmusic_home"})
     }
+    return resp;
     if (!resp.contents.singleColumnBrowseResultsRenderer) {
         return null;
     }

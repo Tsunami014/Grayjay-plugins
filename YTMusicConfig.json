@@ -10,7 +10,7 @@
   "version": 1,
   "iconUrl": "./YTMusic.png",
   "id": "ff7fee60-202f-4aeb-a270-676862dd854b",
-  "scriptSignature": "W7rbxlUSPWR11SI3H3gtw/7rtURZDrEZvMbmuyqzvTpfSZL/7jJjQ2/Lmoe3Y7TwL1KThjoZIZn9IbJcp0+DmionNid3ksXgw/MMyHy75GfYMNwdKTvM4aY7EtuYnc9x4M73OPb4aFWfZ5NwtHD2eNgo7ZCjeWL/uwyKQBD+igEYaTaqmT6sFZ66xk5lgDhIW6cgb0G2DFDml0Z1JkyeMzt94bolyS/AQ3kdFNO6GpRWhjiaacK6/1i1Qt4OtSKAyFi9ahmVurfrvmLAKSdigdJF4JaDvxc2EH6SjS5JdgJO9DZ4+VYoRFWUdKB/K1qUjZH27yDOh1Fi2tWLCEsLnQD9ss6QY1+2Uz/mYR5TnFzlC7W9RFmRM8m6nSv0cYxHRHMdGZ23c3eZ0rcrlZPRqKFiasiEvGwnHYSLNiv8NslTet4oG/6voOtMCX0aqe77qsFGAO3dM3MUD962/Co0PunNEUQctFeFIj8ELCxFNcexewFNGx9r7PtdWRPExspt",
+  "scriptSignature": "PoKTbQF+UFGp43rfUHx73glZDAlCB2rX9NwGziYISPAhdrGlAbBm7UUhXR6H8C4JwGTPBCeGrXMAD9yRmGiRbh2Fip6IoMG7myulJw9dnSiEvWOdbIhpwoT03+aCuaKY7SBXeCK3XLyEGlN2N4MlF3MLTM0ugFsPkhWYb/rzq6k0YcAVsNBBfFWVlGlrz1orldejMIbzdr3L8YPd9UNB7l/13ZO0p/AW5AOL6hazVsODo3hIIJxC5NxDPA2Vh8epIy1loKA5pfZSOWwIib/ZWfz3WGuK8JlpGZC3A/FLoGZOhvLTAR/tvchPVK3Rw/6Pcoe1nf+W8RdJc9SwGztUhVEaFAVRU27JDmtehyBCRIQ/0iIQCPymHylTPZi5B6rxOWhpoGqBsVK+oCrH+4spyX04vj4WNIDOeCZm86rCuy1HcQELcWF/Yv+LEq7QZ0ZhY5tAFLpmKve9QFAv0HZoCVljlEegxcI+8fiq+MJ1wLqiH/L3ja6xA1qmnY3PN99V",
   "scriptPublicKey": "MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAuNJJK3A0D4NhOqMZSrtEyl0JTYZxUVXqosKT7ZopuGvq+zT5LzinI8kxr+wjMHlmN1EjNkrBitkGQEvRDpXDxIpe4IiHZRkrbFDYvxsZA3h0N0sKn8pJzMHP/orFsBi0CUWck2ynyqIsHGqqF3ziHHZi4DUIMTvdaqGAwJIYo5dDS+T/L70CfyqZhJnGMAGGMGXW0JHbmtURDz0hgMWkz/eREkYbce8aYV31JBImTosFADLQ6JPSi3rDEZagwMO2ipvK3fGsDdQfJ1CsBNR/8xJLTsJYrNoMnqLvWZRkcEBpbYB+7N6aSOVO+GdJ4S93f25Deru7BkWM/wHrJtvGDT7/a9GxfFl08jU5f7JRchn+zoqyn7db1d7rtrNiW8a4X5MNqASSkzJPPZgMrqDlCilSYkkRYsUvkhmzRPUhxYG0mv69gOqKrpLoMX3Y1IkA8iG6SWNTKiCnsrKexb+pKoZWg/76jdB1UoChBqd1divqW1Te7VUvRir400D5tjg1AgMBAAE=",
   "packages": [
     "Http"
@@ -24,6 +24,22 @@
   "supportedClaimTypes": [
     3
   ],
+  "authentication": {
+    "completionUrl": "https://music.youtube.com/",
+    "loginUrl": "https://accounts.google.com/ServiceLogin?ltmpl=music&service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fmusic.youtube.com%252F%26feature%3D__FEATURE__&hl=en",
+    "cookiesToFind": [
+      "SIDCC"
+    ],
+    "cookiesExclOthers": false,
+    "headersToFind": [
+      "Authorization"
+    ],
+    "domainHeadersToFind": {
+      ".youtube.com": [
+        "authorization"
+      ]
+    }
+  },
   "settings": [
     {
       "variable": "header",
