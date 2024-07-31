@@ -7,6 +7,7 @@ const YTM_DOMAIN = "https://music.youtube.com"
 const YT_DOMAIN = "https://www.youtube.com"
 const YTM_WATCH_URL = YTM_DOMAIN + "/watch?v="
 const YTM_BASE_API = YT_DOMAIN + "/youtubei/v1/"
+const YTM_BASE_API = YT_DOMAIN + "/youtubei/v1/"
 const YTM_PARAMS = "?alt=json"
 
 const info = {
