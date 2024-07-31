@@ -4,7 +4,7 @@
   "author": "Tsunami014",
   "authorUrl": "https://tsunami014.github.io",
   "platformUrl": "https://music.youtube.com",
-  "sourceUrl": "https://raw.githubusercontent.com/Tsunami014/Grayjay-plugins/main/YTMusicConfig.json",
+  "sourceUrl": "https://raw.githubusercontent.com/toyboatcash/Grayjay-plugins/main/YTMusicConfig.json",
   "repositoryUrl": "https://github.com/Tsunami014/Grayjay-plugins",
   "scriptUrl": "./YTMusicScript.js",
   "version": 2,
