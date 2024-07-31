@@ -1,5 +1,5 @@
 const REGEX_DETAILS_URL = /https?:\/\/music\.youtube\.com\/watch\?v=[a-zA-Z0-9_-]+/
-const REGEX_CHANNEL_URL = /https?:\/\/music\.youtube\.com\/channel\/[a-zA-Z0-9_-]+//
+const REGEX_CHANNEL_URL = /https?:\/\/music\.youtube\.com\/channel\/[a-zA-Z0-9_-]+/
 
 const USER_AGENT_TABLET = "Mozilla/5.0 (iPad; CPU OS 13_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/87.0.4280.77 Mobile/15E148 Safari/604.1";
 
