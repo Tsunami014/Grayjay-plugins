@@ -573,17 +573,24 @@ source.getContentDetails = function(url) {
     
 }
 
-source.getComments = function (url, continuationToken) { // TODO: Since YouTube Music has no native comment system, implement a get lyrics system here :)
+source.getComments = function (url, continuationToken) {
     /**
      * @param url: string
      * @param continuationToken: any?
      * @returns: CommentPager
      */
+    const parts = url.split('v=');
+    const id = parts.pop();
+    const lyricEndpoint = send_request("next", {"videoId": id}).contents.singleColumnMusicWatchNextResultsRenderer.tabbedRenderer.watchNextTabbedResultsRenderer.tabs[1].tabRenderer.endpoint.browseEndpoint.browseId;
+    const lyrics = send_request("browse", {"browseId": lyricEndpoint}).contents.sectionListRenderer.contents[0].musicDescriptionShelfRenderer;
 
-    const comments = []; // The results (Comment)
-    const hasMore = false; // Are there more pages?
     const context = { url: url, continuationToken: continuationToken }; // Relevant data for the next page
-    return new SomeCommentPager(comments, hasMore, context);
+    return new SomeCommentPager([new Comment({
+        author: new PlatformAuthorLink(PLATFORM_ID, "LYRICS", "", ""),
+        message: lyrics.description.runs[0].text+"\n\n"+lyrics.footer.runs[0].text,
+        date: Date.now() / 1000,
+        replyCount: 0,
+    })], false, context);
 
 }
 source.getSubComments = function (comment) {
