@@ -168,7 +168,9 @@ function applyDescrambler(streamData) {
 function get_author_link(channelId) {
     let resp = send_request("browse", {"browseId": channelId})
     if (!resp.header.musicImmersiveHeaderRenderer) {
-        return null;
+        return new PlatformAuthorLink(
+            PLATFORM_ID, "???", "", ""
+        );
     }
     let thumbnails = resp.header.musicImmersiveHeaderRenderer.thumbnail.musicThumbnailRenderer.thumbnail.thumbnails
     return new PlatformAuthorLink(
@@ -280,6 +282,11 @@ function get_video_details(video_id) {
         }
     }
 
+    var tagstext = ""
+    if (data2.tags) {
+        tagstext = "\n\n" + data2.tags[0] + ": " + data2.tags[2] + " [" + data2.tags[1] + "]";
+    }
+
 	return new PlatformVideoDetails({
         id: PLATFORM_ID,
         name: data.title,
@@ -292,7 +299,7 @@ function get_video_details(video_id) {
         url: YTM_WATCH_URL + video_id,
         isLive: data.isLiveContent,
     
-        description: data2.description + "\n\n" + data2.tags[0] + ": " + data2.tags[2] + " [" + data2.tags[1] + "]",
+        description: data2.description + tagstext,
         video: new UnMuxVideoSourceDescriptor([], Sources),
         //live: null,
         rating: new RatingLikes(0), // No way to access the rating on the API
