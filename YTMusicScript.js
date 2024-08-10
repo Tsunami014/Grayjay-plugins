@@ -220,7 +220,7 @@ function get_videos(video_ids, use_thumbnail = false) { // False thumbnail is fa
             author = new PlatformAuthorLink(
                 PLATFORM_ID, 
                 data2.pageOwnerDetails.name.slice(0, -8), 
-                data2.pageOwnerDetails.youtubeProfileUrl,
+                data2.pageOwnerDetails.youtubeProfileUrl.replace('www.youtube.com', 'music.youtube.com'),
             );
         }
         output.push(new PlatformVideo({
@@ -492,7 +492,7 @@ function StringToNumber(str) {
     return Math.round(number * factor);
 }
 
-source.getChannel = function(url) { //TODO: Get the channel details
+source.getChannel = function(url) {
     const parts = url.split('/');
     const id = parts.pop() || parts.pop();  // handle potential trailing slash
     let resp = send_request("browse", {"browseId": id})
@@ -520,8 +520,34 @@ source.getChannelContents = function(url, type, order, filters, continuationToke
      * @param continuationToken: any?
      * @returns: VideoPager
      */
+    if (url.startsWith('http://')) {
+        url = url.replace('http://', 'https://'); // It will ONLY work with https
+    }
+    let resp = send_request("browse", {"browseId": url.slice(34)});
 
-    const videos = []; // The results (PlatformVideo)
+    const videos = resp.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[2].musicCarouselShelfRenderer.contents.map(function(s) {
+        var resp2 = send_request("browse", {"browseId": s.musicTwoRowItemRenderer.title.runs[0].navigationEndpoint.browseEndpoint.browseId});
+        var contents = resp2.contents.twoColumnBrowseResultsRenderer.secondaryContents.sectionListRenderer.contents[0].musicShelfRenderer.contents[0].musicResponsiveListItemRenderer;
+        var info = contents.flexColumns;
+        return new PlatformVideo({
+            id: PLATFORM_ID,
+            name: info[0].musicResponsiveListItemFlexColumnRenderer.text.runs[0].text,
+            thumbnails: new Thumbnails(resp2.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].musicResponsiveHeaderRenderer.thumbnail.musicThumbnailRenderer.thumbnail.thumbnails.map(function(t) {
+                return new Thumbnail(t.url, t.width);
+            })),
+            author: new PlatformAuthorLink(
+                PLATFORM_ID,
+                resp.header.musicImmersiveHeaderRenderer.title.runs[0].text, 
+                url, 
+            ),
+            url: YTM_WATCH_URL + info[0].musicResponsiveListItemFlexColumnRenderer.text.runs[0].navigationEndpoint.watchEndpoint.videoId,
+            /*uploadDate: Date.parse(data2.uploadDate) / 1000, // TODO: This. It is all in contents somewhere I believe...
+            duration: parseInt(data.lengthSeconds),
+            viewCount: parseInt(data.viewCount),
+            url: YTM_WATCH_URL + video_ids[i],
+            isLive: data.isLiveContent*/
+        });
+    }); // The results (PlatformVideo)
     const hasMore = false; // Are there more pages?
     const context = { url: url, type: type, order: order, filters: filters, continuationToken: continuationToken }; // Relevant data for the next page
     return new SomeChannelVideoPager(videos, hasMore, context);
@@ -547,7 +573,7 @@ source.getContentDetails = function(url) {
     
 }
 
-source.getComments = function (url, continuationToken) {
+source.getComments = function (url, continuationToken) { // TODO: Since YouTube Music has no native comment system, implement a get lyrics system here :)
     /**
      * @param url: string
      * @param continuationToken: any?
