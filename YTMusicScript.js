@@ -586,19 +586,33 @@ source.getComments = function (url, continuationToken) {
      * @param continuationToken: any?
      * @returns: CommentPager
      */
+    var comments = [];
+
+    // Get lyrics
     const parts = url.split('v=');
     const id = parts.pop();
     const lyricEndpoint = send_request("next", {"videoId": id}).contents.singleColumnMusicWatchNextResultsRenderer.tabbedRenderer.watchNextTabbedResultsRenderer.tabs[1].tabRenderer.endpoint.browseEndpoint.browseId;
-    const lyrics = send_request("browse", {"browseId": lyricEndpoint}).contents.sectionListRenderer.contents[0].musicDescriptionShelfRenderer;
+    const lyricsResp = send_request("browse", {"browseId": lyricEndpoint})
+    if (lyricsResp.contents.sectionListRenderer) {
+        const lyrics = lyricsResp.contents.sectionListRenderer.contents[0].musicDescriptionShelfRenderer;
+        comments.push(new Comment({
+            author: new PlatformAuthorLink(PLATFORM_ID, "LYRICS", "", ""),
+            message: lyrics.description.runs[0].text+"\n\n"+lyrics.footer.runs[0].text,
+            date: Date.now() / 1000,
+            replyCount: 0,
+        }));
+    } else {
+        comments.push(new Comment({
+            author: new PlatformAuthorLink(PLATFORM_ID, "LYRICS", "", ""),
+            message: "Could not find lyrics for this song.",
+            date: Date.now() / 1000,
+            replyCount: 0,
+        }));
+    }
 
+    // Return the response
     const context = { url: url, continuationToken: continuationToken }; // Relevant data for the next page
-    return new SomeCommentPager([new Comment({
-        author: new PlatformAuthorLink(PLATFORM_ID, "LYRICS", "", ""),
-        message: lyrics.description.runs[0].text+"\n\n"+lyrics.footer.runs[0].text,
-        date: Date.now() / 1000,
-        replyCount: 0,
-    })], false, context);
-
+    return new SomeCommentPager(comments, false, context);
 }
 source.getSubComments = function (comment) {
     /**
