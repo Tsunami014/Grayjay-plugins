@@ -19,6 +19,8 @@ fi
 # Generate signature for the provided JS file
 SIGNATURE=$(cat $JS_FILE_PATH | openssl dgst -sha512 -sign tmp_private_key.pem | base64 -w 0)
 
+echo "SIGNATURE: $SIGNATURE"
+
 # Extract public key from the temporary private key file
 PUBLIC_KEY=$(openssl rsa -pubout -outform DER -in tmp_private_key.pem 2>/dev/null | openssl pkey -pubin -inform DER -outform PEM | tail -n +2 | head -n -1 | tr -d '\n')
 
