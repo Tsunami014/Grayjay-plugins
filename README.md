@@ -11,7 +11,9 @@ This plugin is not actually possible yet, because they still have yet to develop
 
 This is a work in progress. Currently you can see *something* work, but it isn't much so if you're looking for a fully developed plugin, check back later.
 
-You can actually install it by this url: `https://tsunami014.github.io/Grayjay-plugins/YTMusicConfig.json` OR by this QR Code: [![frame](TYM-QR.png)](https://tsunami014.github.io/Grayjay-plugins/YTMusicConfig.json)
+You can actually install it by this url: `https://tsunami014.github.io/Grayjay-plugins/YTMusicConfig.json` OR by this QR Code:
+
+[![frame](./YTM-QR.png)](https://tsunami014.github.io/Grayjay-plugins/YTMusicConfig.json)
 
 ## Spotify
 **Version**: `N/A`
