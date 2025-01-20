@@ -1,11 +1,12 @@
-const REGEX_DETAILS_URL = /https?:\/\/music\.youtube\.com\/watch\?v=[a-zA-Z0-9_-]+/
-const REGEX_CHANNEL_URL = /https?:\/\/music\.youtube\.com\/channel\/[a-zA-Z0-9_-]+/
+const REGEX_DETAILS_URL = /https?:\/\/(www\.)?(music\.)?youtube\.com\/watch\?v=[a-zA-Z0-9_-]+/
+const REGEX_CHANNEL_URL = /https?:\/\/(www\.)?(music\.)?youtube\.com\/channel\/[a-zA-Z0-9_-]+/
 
 const USER_AGENT_TABLET = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/126.0.6478.190 Mobile/15E148 Safari/604.1";
 
 const YTM_DOMAIN = "https://music.youtube.com"
 const YT_DOMAIN = "https://www.youtube.com"
 const YTM_WATCH_URL = YTM_DOMAIN + "/watch?v="
+const YT_WATCH_URL = YT_DOMAIN + "/watch?v="
 const YTM_BASE_API = YT_DOMAIN + "/youtubei/v1/"
 const YTM_PARAMS = "?alt=json"
 
@@ -94,6 +95,13 @@ function batch_send_request(endpoints, bodies, additionalParams = {0: ""}) {
         results.push(JSON.parse(responses[i].body));
     }
     return results;
+}
+
+function makeLink(id) {
+    if (_settings['useYT']) {
+        return YT_WATCH_URL + id;
+    }
+    return YTM_WATCH_URL + id;
 }
 
 source.enable = function (conf, settings) {
@@ -211,7 +219,7 @@ function get_video(video_id) {
         uploadDate: Date.parse(data2.uploadDate) / 1000,
         duration: parseInt(data.lengthSeconds),
         viewCount: parseInt(data.viewCount),
-        url: YTM_WATCH_URL + video_id,
+        url: makeLink(video_id),
         isLive: data.isLiveContent
     });
 }
@@ -248,7 +256,7 @@ function get_videos(video_ids, use_thumbnail = false) { // False thumbnail is fa
             uploadDate: Date.parse(data2.uploadDate) / 1000,
             duration: parseInt(data.lengthSeconds),
             viewCount: parseInt(data.viewCount),
-            url: YTM_WATCH_URL + video_ids[i],
+            url: makeLink(video_ids[i]),
             isLive: data.isLiveContent
         }));
     }
@@ -313,7 +321,7 @@ function get_video_details(video_id) {
         author: get_author_link(data.channelId),
         uploadDate: Date.parse(data2.uploadDate) / 1000,
         viewCount: parseInt(data.viewCount),
-        url: YTM_WATCH_URL + video_id,
+        url: makeLink(video_id),
         isLive: data.isLiveContent,
     
         description: data2.description + tagstext,
@@ -347,7 +355,7 @@ function get_video_fast(info) {
                 return new Thumbnail(s.url, s.width);
             })),
             author: UNKNOWN_AUTHOUR,
-            url: YTM_WATCH_URL + info.playlistItemData.videoId,
+            url: makeLink(info.playlistItemData.videoId),
         });
     }
 }
@@ -564,11 +572,11 @@ source.getChannelContents = function(url, type, order, filters, continuationToke
                 resp.header.musicImmersiveHeaderRenderer.title.runs[0].text, 
                 url, 
             ),
-            url: YTM_WATCH_URL + info[0].musicResponsiveListItemFlexColumnRenderer.text.runs[0].navigationEndpoint.watchEndpoint.videoId,
+            url: makeLink(info[0].musicResponsiveListItemFlexColumnRenderer.text.runs[0].navigationEndpoint.watchEndpoint.videoId),
             /*uploadDate: Date.parse(data2.uploadDate) / 1000, // TODO: This. It is all in contents somewhere I believe...
             duration: parseInt(data.lengthSeconds),
             viewCount: parseInt(data.viewCount),
-            url: YTM_WATCH_URL + video_ids[i],
+            url: changeLink(video_ids[i]),
             isLive: data.isLiveContent*/
         });
     }); // The results (PlatformVideo)

@@ -4,7 +4,7 @@
 
 Current status: [![pages-build-deployment](https://github.com/Tsunami014/My-Grayjay-plugin/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/Tsunami014/My-Grayjay-plugin/actions/workflows/pages/pages-build-deployment)
 ## Youtube music
-**Version**: `4`
+**Version**: `5`
 
 This is a work in progress. Currently you can see *something* work, but it isn't much so if you're looking for a fully developed plugin, check back later.
 
