@@ -1,2 +1,3 @@
 test/
 tmp_private_key.pem
+.envrc

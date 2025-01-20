@@ -54,6 +54,8 @@ const UNKNOWN_AUTHOUR = new PlatformAuthorLink(
     "", 
 )
 
+const LYRIC_THUMBNAIL_URL = "https://raw.githubusercontent.com/Tsunami014/Grayjay-plugins/refs/heads/main/assets/lyrics.png"
+
 const UseAuth = [
     "search",
     "browse"
@@ -120,18 +122,29 @@ function executeRequest(url, headers = {}, data = null) {
 
 function player(video_id) {
     const endpoint = `${YTM_BASE_API}player`;
-    const query = {
-        'videoId': video_id,
-        'key': info['api_key'],
-        'contentCheckOk': true,
-        'racyCheckOk': true
-    };
+    const query = {'alt': 'json'};
     const endpoint_url = `${endpoint}?${Object.keys(query).map(key => `${key}=${encodeURIComponent(query[key])}`).join('&')}`;
     const headers = {'Content-Type': 'application/json', ...info['header']};
+    const daysSinceEpoch = Math.floor((new Date() - new Date(0)) / (1000 * 60 * 60 * 24)) - 1;
     const response = executeRequest(
         endpoint_url,
         headers,
-        {'context': info['context']}
+        {
+            "playbackContext": {
+                "contentPlaybackContext": {
+                    "signatureTimestamp": daysSinceEpoch
+                }
+            },
+            "video_id": video_id,
+            "context": {
+                "client": {
+                    "clientName": "WEB_REMIX",
+                    "clientVersion": "1.20250120.01.00",
+                    "hl": "en"
+                },
+                "user": {}
+            }
+        }
     );
     return response;
 }
@@ -247,6 +260,10 @@ function get_video_details(video_id) {
     let data = player_data.videoDetails;
     let data2 = player_data.microformat.microformatDataRenderer;
 
+    let plyr = player(video_id);
+    if (plyr.playabilityStatus && plyr.playabilityStatus.status == "LOGIN_REQUIRED") {
+        throw new Error('Requires login!');
+    }
     const streams = applyDescrambler(player(video_id).streamingData);
 
     let Sources = []
@@ -596,14 +613,14 @@ source.getComments = function (url, continuationToken) {
     if (lyricsResp.contents.sectionListRenderer) {
         const lyrics = lyricsResp.contents.sectionListRenderer.contents[0].musicDescriptionShelfRenderer;
         comments.push(new Comment({
-            author: new PlatformAuthorLink(PLATFORM_ID, "LYRICS", "", ""),
+            author: new PlatformAuthorLink(PLATFORM_ID, "LYRICS", "", LYRIC_THUMBNAIL_URL),
             message: lyrics.description.runs[0].text+"\n\n"+lyrics.footer.runs[0].text,
             date: Date.now() / 1000,
             replyCount: 0,
         }));
     } else {
         comments.push(new Comment({
-            author: new PlatformAuthorLink(PLATFORM_ID, "LYRICS", "", ""),
+            author: new PlatformAuthorLink(PLATFORM_ID, "LYRICS", "", LYRIC_THUMBNAIL_URL),
             message: "Could not find lyrics for this song.",
             date: Date.now() / 1000,
             replyCount: 0,

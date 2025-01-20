@@ -1,6 +1,8 @@
 #!/bin/sh
 # USAGE:
 # ./sign.sh YTMusicScript.js YTMusicConfig.json
+# REQUIRES:
+# sudo apt install jq
 
 # Parameters
 JS_FILE_PATH=$1

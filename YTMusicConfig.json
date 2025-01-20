@@ -7,11 +7,11 @@
   "sourceUrl": "https://tsunami014.github.io/Grayjay-plugins/YTMusicConfig.json",
   "repositoryUrl": "https://github.com/Tsunami014/Grayjay-plugins",
   "scriptUrl": "./YTMusicScript.js",
-  "version": 3,
+  "version": 4,
   "iconUrl": "./YTMusic.png",
   "id": "ff7fee60-202f-4aeb-a270-676862dd854b",
-  "scriptSignature": "lMambPQEjO9WugXV3WyT2SKmLhgo9FLAfNmx8nKZRkv2+4XTahdGyH10VnHlyL/QEI7QXqb6ziwm6OSprupAaNUV7iICqvfxX011rn40M+6RgfqBtRDlFYXe/Xh/r2l+QzKnmeR5sbpFAg644C0n/TqRAbto/NTHujvb4AWT/0+3ZxV4ThF1R4aiSPH5Iuf81Psn8BHauR4ozVAQkTFVoXEa5at2CzQTb2JYHx0olwNU1jWRRZ0cYKHI4Zx1HHNdFKYPfdEmpkdHY0+Yqn1qDqWWEVhZqZT+bYY1bPI0ysoQFC12k8qU9F/ZT3uT8McH3le6+vJrtzqHNEDaDfjcI/0rw/3UYGK9kzWOshXcD2vxoZ9KeR8xjjtMGWEVCtYHJAnoizCO7xUpSLIPH2kBEuMTdF/y33anDrLpU+hpA8cXlUJt+emJvqScjE3p7ZELIJ7bJSVnZ8HOs2Pj2KLr5+rfVqtPfKF4iJWq7UqQiUSmZDPJpezkXGPyQBI+1lWb",
-  "scriptPublicKey": "MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAuNJJK3A0D4NhOqMZSrtEyl0JTYZxUVXqosKT7ZopuGvq+zT5LzinI8kxr+wjMHlmN1EjNkrBitkGQEvRDpXDxIpe4IiHZRkrbFDYvxsZA3h0N0sKn8pJzMHP/orFsBi0CUWck2ynyqIsHGqqF3ziHHZi4DUIMTvdaqGAwJIYo5dDS+T/L70CfyqZhJnGMAGGMGXW0JHbmtURDz0hgMWkz/eREkYbce8aYV31JBImTosFADLQ6JPSi3rDEZagwMO2ipvK3fGsDdQfJ1CsBNR/8xJLTsJYrNoMnqLvWZRkcEBpbYB+7N6aSOVO+GdJ4S93f25Deru7BkWM/wHrJtvGDT7/a9GxfFl08jU5f7JRchn+zoqyn7db1d7rtrNiW8a4X5MNqASSkzJPPZgMrqDlCilSYkkRYsUvkhmzRPUhxYG0mv69gOqKrpLoMX3Y1IkA8iG6SWNTKiCnsrKexb+pKoZWg/76jdB1UoChBqd1divqW1Te7VUvRir400D5tjg1AgMBAAE=",
+  "scriptSignature": "XMEPJFByLkLB3uPBNcd9QTxpRp9tzDeOJSFXOOAXg90TE/80dVQpBqD0azp4/HBYc0bSRQ+RTbwe6i/E/DkGENySmWyFqWLMSRJPH+k5rU5NbTUjr/auj2ipY7d5XLBZes5QfdWDBvtwJwHWNIG5VdeRiasAxW4BOsujCSg4389lZG9ri2ToIh9V0cq95R63gaVnHB8sR7KMoly++pYMEeM/UPdX2qWrw6xsAIJFOECFNM7Q0H/bSuuc4snwBgG7o1ZtBS17nwoB3UHWrWhok5cqyb1+BVmlH7jgtG7jxZUYwybbIDZ/pi+TVDbWVwqAY7Jc+N5e77BxKrkWebN01imPV/Y2JuZTSyTz9KTuzG48w8Oqv46HMB/RLRblOKLwIQOPwilXnd7IX1OMPjRQKbxEE/PedKw1uXmhcFc2724dVgwd6brLS1eL6Ij/kjXnpheGce0S7UDMD8wfvVbwpu0AWDGbpY1JSLaLYpxKfzZpEWDut54kRLbJYgVjPwbkaZpmf14KFzece73RLTq6CQp5MqEVnLY4juiPKZIf8PCluCEv+dQzfu5mdTQfnV8i4VUFaBDNnI2K7fL1FwCQ6424eA0mvrVTPG3UMXMANdmRyukdLFDHqfFGd4GDwNLla1A40A77IO3Ely47RKNxmfBH2LclKdKPdlnlfoLc+00=",
+  "scriptPublicKey": "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAoJb3ocOvHXXvIlFiE4GZDWINIkNUMisQP24lYcW2IPvBCJfV+KhJtdGQhGGU8owawPBQx/qdPjhjlF6dAvuIX8m+6PzzT3mnJNDVbiAH+D5v73lr5PDBf0RKPMS2lYEWmjjNqIsct22o4r0pCPiHtABZqbIfH00ckvGdW2vg2BH6aqZRaRIJB+39EpUtz8xj3VfRYTYMiRQtXtF5E21Fsgr3xeUKxCIUqZzpGL0ZBpHR3GP2Rmegks1FuRprpUfwKbxTankhv1XnRDUzvqpfl5fg+0X4ErNER1uZQwUE10fkdtZsUjhwQcCTUdPjh6bhuN36ZEMsXrQOoS+SEEXGzBwTFa7gphpZoj343XRo8MnhNaek7WaWuVORLT2V5IeOPVVekXLff1h6CbFE3M/hGm/Uv6kpKKyiSGwcO7dzgZl8bknvED9IgqU8nL1+Vaj6DHz9xi1F+YjWVxaL60RTmrRU1AM00noHNG7dknkGhxPhHXcx1SoAQ4/URgu+wfSwx9zkl4JTL3wGEQSZkWk7hsaZM70HMglrTmVgwcftF9LWPMVnC94KTMhowNqkpU9z7c/v48gqPnscl0BBBNVOwOO/zKmXweB2TbU+vKfgBjP84sV5ShaBBNdc9rT2HeCJxqXyWZmlWlLdHovhTUvffFz6pt6oLmw9N7nlzOBa4o8CAwEAAQ==",
   "packages": [
     "Http"
   ],
@@ -26,25 +26,27 @@
   ],
   "authentication": {
     "completionUrl": "https://music.youtube.com/",
-    "loginUrl": "https://accounts.google.com/ServiceLogin?ltmpl=music&service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fmusic.youtube.com%252F%26feature%3D__FEATURE__&hl=en",
+    "userAgent": "Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.230 Mobile Safari/537.36",
+    "loginUrl": "https://accounts.google.com/ServiceLogin?ltmpl=music&service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fmusic.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252Fchannel_switcher&hl=en&ec=65620",
     "cookiesToFind": [
       "SIDCC"
     ],
     "cookiesExclOthers": false,
     "headersToFind": [
-      "Authorization"
+      "authorization"
     ],
     "domainHeadersToFind": {
       ".youtube.com": [
         "authorization"
       ]
-    }
+    },
+    "loginWarning": "You must select a profile after login for authentication to complete."
   },
   "settings": [
     {
       "variable": "header",
       "name": "Loader",
-      "description": "Change which algorithm loads specific parts of the app. Faster algorithm may not have as much information (e.g. author name may be missing).\nThe `Everything` option loads everything, which is very slow.\nThe Most things loads at a medium speed and loads everything but the thumbnails on the authours, which is why it is recommended\nAnd Just the necesities loads really fast (~1 sec) but only loads the picture, the title of the song and half the time the author name. Other things will be missing",
+      "description": "Change which algorithm loads specific parts of the app. Faster algorithm may not have as much information (e.g. author name may be missing).\nThe `Everything` option loads everything, which is very slow.\nThe Most things loads at a medium speed and loads everything but the thumbnails on the authours, which is why it is recommended\nAnd Just the necesities loads really fast, but only loads the picture, the title of the song and half the time the author name. Other things will be missing",
       "type": "Header"
     },
     {
