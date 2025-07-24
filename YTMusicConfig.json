@@ -25,16 +25,14 @@
     3
   ],
   "authentication": {
-    "completionUrl": "https://music.youtube.com/",
     "userAgent": "Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.230 Mobile Safari/537.36",
-    "loginUrl": "https://accounts.google.com/ServiceLogin?ltmpl=music&service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fmusic.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fmusic.youtube.com%252Fchannel_switcher&hl=en&ec=65620",
-    "cookiesToFind": [
-      "SIDCC"
-    ],
+    "completionUrl": "https://music.youtube.com/",
+    "loginUrl": "https://accounts.google.com/ServiceLogin?&service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fmusic.youtube.com%252F&hl=en&ec=65620",
     "headersToFind": ["authorization"],
     "domainHeadersToFind": {
-			".youtube.com": ["authorization"]
-		},
+      ".youtube.com": ["authorization"]
+    },
+    "cookiesToFind": ["SIDCC"],
     "cookiesExclOthers": false,
     "loginWarning": "You must select a profile after login for authentication to complete."
   },
