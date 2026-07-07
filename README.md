@@ -1,16 +1,14 @@
 # My Grayjay plugins
 > [!NOTE]
-> I made this entirely to see how well I could go and did not expect >0 people to take intrest, so will probably rarely update it if ever. Sorry.
-
-For my information so I don't forget and get annoyed for hours ever again, the correct dev url is `http://192.168.XXX.XXX:11337/dev`. Please note the `http`, the `:11337` and the `/dev`
+> I made this entirely just to see how well I could go and did not expect >0 people to take intrest, so will rarely update it if ever, sorry.
 
 Current status: [![pages-build-deployment](https://github.com/Tsunami014/My-Grayjay-plugin/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/Tsunami014/My-Grayjay-plugin/actions/workflows/pages/pages-build-deployment)
 ## Youtube music
 **Version**: `5`
 
-This is a work in progress. Currently you can see *something* work, but it isn't much so if you're looking for a fully developed plugin, check back later.
+This is a work in progress and is highly incomplete.
 
-You can actually install it by this url: `https://tsunami014.github.io/Grayjay-plugins/YTMusicConfig.json` OR by this QR Code:
+You can install it by this url: `https://tsunami014.github.io/Grayjay-plugins/YTMusicConfig.json` OR by this QR Code:
 
 [![QR code](./readme-pics/QRs/YTM-QR.png)](https://tsunami014.github.io/Grayjay-plugins/YTMusicConfig.json)
 
@@ -20,4 +18,9 @@ You can actually install it by this url: `https://tsunami014.github.io/Grayjay-p
 ## Medium.com
 **Version**: `N/A`
 
-This plugin is not actually possible yet, because they still have yet to develop something for articles, currently only platform posts are supported and it doesn't work with that, but I'm keeping the js file in case they add it in
+# For development
+For my information so I don't forget and get annoyed for hours ever again, the correct dev url is `http://192.168.XXX.XXX:11337/dev`. Please note the `http`, the `:11337` and the `/dev`.
+
+[Grayjay plugin development docs](https://gitlab.futo.org/videostreaming/grayjay/-/blob/master/plugin-development.md)
+
+[Existing plugins](https://gitlab.futo.org/videostreaming/plugins)
